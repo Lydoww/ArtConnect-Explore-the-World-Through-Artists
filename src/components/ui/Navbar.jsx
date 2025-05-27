@@ -39,7 +39,7 @@ const Navbar = () => {
           <Link to="/" className="flex items-center gap-2">
             <Palette className="h-8 w-8 text-fuchsia-500" />
             <span className="text-xl font-bold bg-gradient-to-r from-fuchsia-400 to-orange-400 bg-clip-text text-transparent">
-              ArtMasters
+              ArtConnect
             </span>
           </Link>
 
