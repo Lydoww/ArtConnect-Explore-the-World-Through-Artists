@@ -17,7 +17,7 @@ export const fetchRandomArtists = async (count = 6) => {
         ps: count * 3,
         imgonly: true,
         toppieces: true,
-        s: "relevance",
+        _: Date.now(),
       },
     });
 
@@ -30,7 +30,9 @@ export const fetchRandomArtists = async (count = 6) => {
     const uniqueArtists = [];
     const seenArtists = new Set();
 
-    artObjects.forEach((artwork) => {
+    const shuffledObjects = [...artObjects].sort(() => Math.random() - 0.5);
+
+    shuffledObjects.forEach((artwork) => {
       const artistName = artwork.principalOrFirstMaker;
 
       // Filtre les artistes anonymes et doublons
