@@ -14,6 +14,7 @@ const Carousel = () => {
       try {
         const { artists } = await fetchLandingPage();
         setArtists(artists);
+        console.log(artists);
       } catch (err) {
         setError(err);
         console.error("Failed to load artists:", err);
@@ -30,6 +31,7 @@ const Carousel = () => {
       artists.map((artist) => ({
         src: artist.image || "/placeholder-artist.jpg",
         alt: artist.name || "Artiste",
+        title: artist.artworkTitle || "Unknown",
       })),
     [artists]
   );
@@ -148,11 +150,22 @@ const Carousel = () => {
                 }`}
                 key={`slide-${index}`}
               >
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  className="w-full h-full object-cover rounded-lg shadow-lg bg-black"
-                />
+                <div className="relative rounded-lg overflow-hidden shadow-lg w-full h-full cursor-pointer group">
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="w-full h-full object-cover"
+                  />
+
+                  {/* Overlay dégradé */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+
+                  {/* Texte superposé */}
+                  <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                    <h3 className="text-lg font-bold">{image.alt}</h3>
+                    <p className="text-sm text-gray-200">{image.title}</p>
+                  </div>
+                </div>
               </motion.div>
             );
           })}

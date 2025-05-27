@@ -3,7 +3,12 @@
 
 html,
 body {
-  background-color: black;
+  background: linear-gradient(
+    to right,
+    #1e293b,
+    #0f172a
+  ); /* slate-800 -> slate-900 */
+
   margin: 0;
   padding: 0;
   height: 100%;
