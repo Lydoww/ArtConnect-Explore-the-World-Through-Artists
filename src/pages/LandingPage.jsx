@@ -44,12 +44,12 @@ const LandingPage = () => {
           </a>
           . Data from{" "}
           <a
-            href="https://metmuseum.org"
+            href="https://www.rijksmuseum.nl/en"
             target="_blank"
             rel="noopener noreferrer"
             className="underline hover:text-fuchsia-400"
           >
-            The Met Museum API
+            The Rijksmuseum API
           </a>
           .
         </p>
