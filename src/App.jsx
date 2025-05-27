@@ -1,14 +1,9 @@
-import LandingPage from "./pages/LandingPage"
-
-const Layout = ({ children }) => (
-  <div className='max-w-5xl mx-auto px-4 mt-4'>{children}</div>
-)
+import LandingPage from "./pages/LandingPage";
 
 const App = () => (
-  <Layout>
+  <div className="px-4 bg-gradient-to-r from-slate-800 to-slate-900 ">
     <LandingPage />
-  </Layout>
-)
+  </div>
+);
 
-
-export default App
+export default App;

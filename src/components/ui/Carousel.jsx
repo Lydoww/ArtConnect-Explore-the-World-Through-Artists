@@ -1,97 +1,133 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { fetchLandingPage } from "../../services/randomArtists";
 
 const Carousel = () => {
-  const originalImages = [
-    {
-      src: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      src: "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      src: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      src: "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      src: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80",
-    },
-  ];
+  const [artists, setArtists] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const loadArtists = async () => {
+      setLoading(true);
+      try {
+        const { artists } = await fetchLandingPage();
+        setArtists(artists);
+      } catch (err) {
+        setError(err);
+        console.error("Failed to load artists:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadArtists();
+  }, []);
+
+  // Transforme les artistes en images pour le carousel
+  const originalImages = useMemo(
+    () =>
+      artists.map((artist) => ({
+        src: artist.image || "/placeholder-artist.jpg",
+        alt: artist.name || "Artiste",
+      })),
+    [artists]
+  );
+
+  // Images étendues pour boucle infinie
+  const extendedImages = useMemo(
+    () => [
+      ...originalImages.slice(-1),
+      ...originalImages,
+      ...originalImages.slice(0, 1),
+    ],
+    [originalImages]
+  );
 
   const visibleSlides = 3;
   const slideWidth = 320;
 
-  const extendedImages = [
-    ...originalImages.slice(-1),
-    ...originalImages,
-    ...originalImages.slice(0, 1),
-  ];
-
-  const [currentIndex, setCurrentIndex] = useState(1); // Commencer sur la première vraie image (index 1)
+  const [currentIndex, setCurrentIndex] = useState(1);
   const [isAnimating, setIsAnimating] = useState(false);
   const timeoutRef = useRef(null);
 
+  // Navigation
   const prevSlide = () => {
-    if (isAnimating) return;
+    if (isAnimating || loading || originalImages.length === 0) return;
     setIsAnimating(true);
     setCurrentIndex((prev) => prev - 1);
   };
 
   const nextSlide = () => {
-    if (isAnimating) return;
+    if (isAnimating || loading || originalImages.length === 0) return;
     setIsAnimating(true);
     setCurrentIndex((prev) => prev + 1);
   };
 
   const goToSlide = (index) => {
-    if (isAnimating) return;
+    if (isAnimating || loading || originalImages.length === 0) return;
     setIsAnimating(true);
-    setCurrentIndex(index + 1); // +1 car on a une image dupliquée au début
+    setCurrentIndex(index + 1);
   };
 
-  // Gérer la boucle infinie
+  // Gestion boucle infinie et reset animation
   useEffect(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     timeoutRef.current = setTimeout(() => {
       setIsAnimating(false);
 
-      // Si on est sur la copie de la dernière image au début (index 0)
       if (currentIndex === 0) {
-        setCurrentIndex(originalImages.length); // Aller à la vraie dernière image
-      }
-      // Si on est sur la copie de la première image à la fin
-      else if (currentIndex === originalImages.length + 1) {
-        setCurrentIndex(1); // Aller à la vraie première image
+        setCurrentIndex(originalImages.length);
+      } else if (currentIndex === originalImages.length + 1) {
+        setCurrentIndex(1);
       }
     }, 300);
 
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, [currentIndex, originalImages.length]);
 
-  // Calcul du décalage pour centrer la slide active
+  // Calcul offset pour centrer slide active
   const getOffset = () => {
     return -currentIndex * slideWidth + ((visibleSlides - 1) * slideWidth) / 2;
   };
 
-  // Obtenir l'index réel pour les dots (0 à originalImages.length - 1)
+  // Index réel pour les dots
   const getRealIndex = () => {
-    if (currentIndex === 0) return originalImages.length - 1; // Copie de la dernière au début
-    if (currentIndex === originalImages.length + 1) return 0; // Copie de la première à la fin
-    return currentIndex - 1; // Index normal décalé de 1
+    if (currentIndex === 0) return originalImages.length - 1;
+    if (currentIndex === originalImages.length + 1) return 0;
+    return currentIndex - 1;
   };
 
+  // Gestion affichage selon état
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-48 text-white">
+        Chargement des artistes...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-48 text-red-500">
+        Erreur lors du chargement des artistes.
+      </div>
+    );
+  }
+
+  if (originalImages.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-48 text-white">
+        Aucun artiste trouvé.
+      </div>
+    );
+  }
+
   return (
-    <div className="relative flex flex-col items-center py-20">
+    <div className="relative flex flex-col items-center py-8">
       <div className="overflow-hidden w-[60rem] h-[20rem] mx-auto">
         <motion.div
           className="flex"
@@ -113,9 +149,9 @@ const Carousel = () => {
                 key={`slide-${index}`}
               >
                 <img
-                  src={image.src || "/placeholder.svg"}
-                  className="w-full h-full object-cover rounded-lg shadow-lg"
-                  alt={`Slide ${index + 1}`}
+                  src={image.src}
+                  alt={image.alt}
+                  className="w-full h-full object-cover rounded-lg shadow-lg bg-black"
                 />
               </motion.div>
             );
@@ -123,13 +159,14 @@ const Carousel = () => {
         </motion.div>
       </div>
 
-      <div className="flex flex-row w-full max-w-[60rem] justify-between items-center mt-6">
+      <div className="flex flex-row w-full max-w-[60rem] justify-between items-center mt-3">
         <button
           onClick={prevSlide}
           disabled={isAnimating}
-          className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed border"
+          className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl  disabled:cursor-not-allowed border"
+          aria-label="Slide précédent"
         >
-          <ChevronLeft className="text-xl text-gray-700 cursor-pointer" />
+          <ChevronLeft className="text-xl text-black cursor-pointer" />
         </button>
 
         <div className="flex flex-row gap-2">
@@ -140,9 +177,10 @@ const Carousel = () => {
               disabled={isAnimating}
               className={`w-3 h-3 rounded-full transition-all duration-300 ${
                 index === getRealIndex()
-                  ? "bg-gray-800 scale-125"
-                  : "bg-gray-400 hover:bg-gray-600"
+                  ? "bg-gray-600 scale-125"
+                  : "bg-white hover:bg-gray-400"
               }`}
+              aria-label={`Aller à la slide ${index + 1}`}
             />
           ))}
         </div>
@@ -150,9 +188,10 @@ const Carousel = () => {
         <button
           onClick={nextSlide}
           disabled={isAnimating}
-          className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed border"
+          className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl disabled:cursor-not-allowed border"
+          aria-label="Slide suivant"
         >
-          <ChevronRight className="text-xl text-gray-700 cursor-pointer" />
+          <ChevronRight className="text-xl text-black cursor-pointer" />
         </button>
       </div>
     </div>

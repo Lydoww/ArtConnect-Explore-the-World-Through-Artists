@@ -1,40 +1,65 @@
 import apiClient from "../api/apiClient";
 
-const API_KEY = import.meta.env.VITE_RIJKSMUSEUM_API_KEY;
+export const fetchLandingPage = async () => {
+  try {
+    const artists = await fetchRandomArtists();
+    return { artists };
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const fetchRandomArtists = async (count = 6) => {
   try {
-    const { artObjects } = await apiClient.get("/collection", {
+    const fullResponse = await apiClient.get("", {
       params: {
-        ps: count,
+        key: import.meta.env.VITE_RIJKSMUSEUM_API_KEY,
+        ps: count * 3,
         imgonly: true,
         toppieces: true,
-        s: "relevance", // Tri par pertinence
+        s: "relevance",
       },
     });
 
-    // Filtre les artistes uniques
+    const { artObjects } = fullResponse;
+
+    if (!artObjects || !Array.isArray(artObjects)) {
+      throw new Error("Réponse API inattendue");
+    }
+
     const uniqueArtists = [];
     const seenArtists = new Set();
 
     artObjects.forEach((artwork) => {
       const artistName = artwork.principalOrFirstMaker;
-      if (artistName && !seenArtists.has(artistName)) {
-        seenArtists.add(artistName);
-        uniqueArtists.push({
-          name: artistName,
-          image: artwork.webImage?.url || "/placeholder-artist.jpg",
-          artworkTitle: artwork.title,
-          id: artwork.objectNumber,
-          century:
-            artwork.dating?.presentingDate?.slice(0, 2) + "00s" || "Unknown",
-        });
+
+      // Filtre les artistes anonymes et doublons
+      if (
+        !artistName ||
+        artistName.toLowerCase() === "anonymous" ||
+        seenArtists.has(artistName)
+      ) {
+        return;
       }
+
+      seenArtists.add(artistName);
+      uniqueArtists.push({
+        name: artistName,
+        image:
+          artwork.webImage?.url ||
+          artwork.headerImage?.url ||
+          "/placeholder-artist.jpg",
+        artworkTitle: artwork.title || "Œuvre sans titre",
+        id: artwork.objectNumber,
+        century:
+          artwork.dating?.presentingDate?.slice(0, 2) + "00s" || "Inconnu",
+        productionPlace: artwork.productionPlaces?.[0] || "Origine inconnue",
+      });
     });
 
     return uniqueArtists.slice(0, count);
   } catch (error) {
-    console.error("Rijksmuseum API Error:", error);
-    throw new Error("Could not load artists. Please try again later.");
+    console.error("Erreur API :", error);
+    throw new Error("Impossible de charger les artistes");
   }
 };
