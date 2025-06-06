@@ -1,39 +1,20 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { fetchLandingPage } from "../../services/randomArtists";
+import { useFetchLandingPage } from "../../hooks/useFetchLandingPage";
 
 const Carousel = () => {
-  const [artists, setArtists] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const loadArtists = async () => {
-      setLoading(true);
-      try {
-        const { artists } = await fetchLandingPage();
-        setArtists(artists);
-        console.log(artists);
-      } catch (err) {
-        setError(err);
-        console.error("Failed to load artists:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadArtists();
-  }, []);
+  const { data = [], error, isLoading } = useFetchLandingPage();
 
   // Transforme les artistes en images pour le carousel
   const originalImages = useMemo(
     () =>
-      artists.map((artist) => ({
+      data.map((artist) => ({
         src: artist.image || "/placeholder-artist.jpg",
         alt: artist.name || "Artiste",
         title: artist.artworkTitle || "Unknown",
       })),
-    [artists]
+    [data]
   );
 
   // Images étendues pour boucle infinie
@@ -54,20 +35,21 @@ const Carousel = () => {
   const timeoutRef = useRef(null);
 
   // Navigation
+  const isDisabled = isAnimating || isLoading || originalImages.length === 0;
   const prevSlide = () => {
-    if (isAnimating || loading || originalImages.length === 0) return;
+    if (isDisabled) return;
     setIsAnimating(true);
     setCurrentIndex((prev) => prev - 1);
   };
 
   const nextSlide = () => {
-    if (isAnimating || loading || originalImages.length === 0) return;
+    if (isDisabled) return;
     setIsAnimating(true);
     setCurrentIndex((prev) => prev + 1);
   };
 
   const goToSlide = (index) => {
-    if (isAnimating || loading || originalImages.length === 0) return;
+    if (isDisabled) return;
     setIsAnimating(true);
     setCurrentIndex(index + 1);
   };
@@ -104,7 +86,7 @@ const Carousel = () => {
   };
 
   // Gestion affichage selon état
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-48 text-white">
         Chargement des artistes...
@@ -175,7 +157,7 @@ const Carousel = () => {
       <div className="flex flex-row w-full max-w-[60rem] justify-between items-center mt-3">
         <button
           onClick={prevSlide}
-          disabled={isAnimating}
+          disabled={isDisabled}
           className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl  disabled:cursor-not-allowed border"
           aria-label="Slide précédent"
         >
@@ -187,7 +169,7 @@ const Carousel = () => {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              disabled={isAnimating}
+              disabled={isDisabled}
               className={`w-3 h-3 rounded-full transition-all duration-300 ${
                 index === getRealIndex()
                   ? "bg-gray-600 scale-125"
@@ -200,7 +182,7 @@ const Carousel = () => {
 
         <button
           onClick={nextSlide}
-          disabled={isAnimating}
+          disabled={isDisabled}
           className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl disabled:cursor-not-allowed border"
           aria-label="Slide suivant"
         >
