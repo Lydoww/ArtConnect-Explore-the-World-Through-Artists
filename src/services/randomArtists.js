@@ -1,18 +1,17 @@
 import apiClient from "../api/apiClient";
 
 export const fetchLandingPage = async () => {
-  try {
-    const artists = await fetchRandomArtists();
-    return { artists };
-  } catch (error) {
-    throw error;
-  }
+  const artists = await fetchRandomArtists();
+  return { artists };
 };
 
 export const fetchRandomArtists = async (count = 6) => {
   try {
+    const randomPage = Math.floor(Math.random() * 100) + 1;
+
     const fullResponse = await apiClient.get("", {
       params: {
+        p: randomPage,
         key: import.meta.env.VITE_RIJKSMUSEUM_API_KEY,
         ps: count * 3,
         imgonly: true,
@@ -52,10 +51,6 @@ export const fetchRandomArtists = async (count = 6) => {
           artwork.headerImage?.url ||
           "/placeholder-artist.jpg",
         artworkTitle: artwork.title || "Œuvre sans titre",
-        id: artwork.objectNumber,
-        century:
-          artwork.dating?.presentingDate?.slice(0, 2) + "00s" || "Inconnu",
-        productionPlace: artwork.productionPlaces?.[0] || "Origine inconnue",
       });
     });
 
