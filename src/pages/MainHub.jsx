@@ -1,17 +1,35 @@
 import { useState } from "react";
 import { Search, ListFilter } from "lucide-react";
+import { useArtist } from "../hooks/useArtist";
+import { useDebounce } from "../hooks/useDebounce";
 
 const MainHub = () => {
   const [searchInput, setSearchInput] = useState("");
 
   const handleInputChange = (e) => {
     setSearchInput(e.target.value);
+    console.log(e.target.value);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setSearchInput("");
-  };
+  const debouncedSearchTerm = useDebounce(searchInput, 500);
+  const { data = [], error, isLoading } = useArtist(searchInput);
+
+  // Gestion affichage selon état
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-48 text-white">
+        Chargement des oeuvres de l'artiste...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-48 text-red-500">
+        Erreur lors du chargement des oeuvres de l'artiste.
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center text-center">
@@ -33,7 +51,7 @@ const MainHub = () => {
               placeholder="Search artists..."
               className="w-full text-gray-400 pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition-all"
               value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
+              onChange={handleInputChange}
             />
           </div>
           <div className="border-2 border-transparent bg-gray-800 py-2 px-3 rounded-lg hover:bg-gray-900 hover:border-fuchsia-500 transition-colors">
