@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Search, ListFilter } from "lucide-react";
 import { useArtist } from "../hooks/useArtist";
 import { useDebounce } from "../hooks/useDebounce";
@@ -8,11 +8,17 @@ const MainHub = () => {
 
   const handleInputChange = (e) => {
     setSearchInput(e.target.value);
-    console.log(e.target.value);
   };
 
   const debouncedSearchTerm = useDebounce(searchInput, 500);
-  const { data = [], error, isLoading } = useArtist(searchInput);
+  const { data = [], error, isLoading } = useArtist(debouncedSearchTerm);
+
+  // Transforme les artistes en images pour le carousel
+  const cardsData = data.map((artwork) => ({
+    src: artwork.image || "/placeholder-artist.jpg",
+    alt: artwork.name || "Artiste inconnu",
+    title: artwork.title || "Unknown",
+  }));
 
   // Gestion affichage selon état
   if (isLoading) {
@@ -24,6 +30,7 @@ const MainHub = () => {
   }
 
   if (error) {
+    console.error("Erreur API:", error);
     return (
       <div className="flex justify-center items-center h-48 text-red-500">
         Erreur lors du chargement des oeuvres de l'artiste.
@@ -32,7 +39,7 @@ const MainHub = () => {
   }
 
   return (
-    <div className="flex justify-center text-center">
+    <div className="flex justify-center text-center ">
       <div className="mt-18">
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
           <span className="bg-gradient-to-r from-fuchsia-500 to-orange-500 bg-clip-text text-transparent">
@@ -45,7 +52,7 @@ const MainHub = () => {
         </p>
         <div className="flex items-center gap-6">
           <div className="relative w-full ">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 flex-1" />
             <input
               type="text"
               placeholder="Search artists..."
@@ -57,6 +64,25 @@ const MainHub = () => {
           <div className="border-2 border-transparent bg-gray-800 py-2 px-3 rounded-lg hover:bg-gray-900 hover:border-fuchsia-500 transition-colors">
             <ListFilter className="text-white" />
           </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+          {cardsData.map(({ src, alt, title }, index) => (
+            <div
+              key={index}
+              className="relative rounded-lg overflow-hidden shadow-lg w-full h-[20rem] cursor-pointer group"
+            >
+              <img src={src} alt={alt} className="w-full h-full object-cover" />
+
+              {/* Overlay au hover */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+
+              {/* Texte au hover */}
+              <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                <h3 className="text-lg font-bold">{alt}</h3>
+                <p className="text-sm text-gray-200">{title}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
