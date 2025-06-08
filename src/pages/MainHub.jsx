@@ -25,7 +25,7 @@ const MainHub = () => {
   };
 
   const cardsData = data.map((artwork) => ({
-    src: artwork.image || "/placeholder-artist.jpg",
+    src: artwork.image ||  "https://via.placeholder.com/400x600?text=No+Image",
     alt: artwork.artist || "Artiste inconnu",
     title: artwork.title || "Unknown",
   }));
@@ -68,7 +68,7 @@ const MainHub = () => {
           </div>
         </div>
 
-        <div className="relative mt-8">
+        <div className="relative mt-8 bg-[#0f172a] rounded-lg p-2">
           {/* Images affichées avec effet pendant le chargement */}
           <div
             className={`grid grid-cols-2 md:grid-cols-4 gap-6 transition-all duration-500 ${
