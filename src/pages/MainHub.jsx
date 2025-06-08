@@ -85,7 +85,7 @@ const MainHub = () => {
           </div>
         </div>
 
-        <div className="relative mt-8 bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg p-2">
+        <div className="relative mt-8">
           {/* ✅ Message si aucune œuvre n'est trouvée */}
           {!isLoading && data.length === 0 && hasSearched && (
             <div className="text-center text-gray-400 text-lg mt-12">
