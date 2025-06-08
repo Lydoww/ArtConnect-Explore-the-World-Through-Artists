@@ -3,10 +3,17 @@ import apiClient from "../api/apiClient";
 export const fetchArtist = async (searchTerm) => {
   try {
     const response = await apiClient.get("", {
-      params: { q: searchTerm, imgonly: true },
+      params: {
+        q: searchTerm,
+        imgonly: true,
+        ps: 20,
+        s: "relevance",
+        type: "painting",
+      },
     });
 
-    const { artObjects } = response;
+    const artObjects = response.data?.artObjects || [];
+
 
     return artObjects
       .map((item) => ({
@@ -17,7 +24,11 @@ export const fetchArtist = async (searchTerm) => {
       }))
       .filter((item) => item.image !== null);
   } catch (error) {
-    console.error("Erreur API:", error);
+    console.error("Erreur détaillée:", {
+      status: error.response?.status,
+      message: error.message,
+      config: error.config,
+    });
     throw error;
   }
 };

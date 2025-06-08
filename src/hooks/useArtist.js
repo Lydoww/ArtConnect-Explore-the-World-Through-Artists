@@ -3,11 +3,13 @@ import { fetchArtist } from "../services/fetchArtist";
 
 export const useArtist = (searchTerm) => {
   return useQuery({
-    queryKey: ["artists", searchTerm],
+    queryKey: ["artists", searchTerm.trim()],
     queryFn: ({ queryKey }) => {
-      const [, searchTerm] = queryKey;
-      return fetchArtist(searchTerm);
+      const [, term] = queryKey;
+      return fetchArtist(term);
     },
-    enabled: !!searchTerm,
+    enabled: !!searchTerm?.trim(),
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
   });
 };
