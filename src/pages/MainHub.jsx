@@ -6,6 +6,7 @@ import { useDebounce } from "../hooks/useDebounce";
 const MainHub = () => {
   const [searchInput, setSearchInput] = useState("");
   const [imagesLoadedCount, setImagesLoadedCount] = useState(0);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const debouncedSearchTerm = useDebounce(searchInput, 500);
   const { data = [], error, isLoading } = useArtist(debouncedSearchTerm);
@@ -13,6 +14,12 @@ const MainHub = () => {
   useEffect(() => {
     setImagesLoadedCount(0);
   }, [data]);
+
+  useEffect(() => {
+    if (debouncedSearchTerm.trim() !== "") {
+      setHasSearched(true);
+    }
+  }, [debouncedSearchTerm]);
 
   const totalImages = data.length;
 
@@ -25,7 +32,7 @@ const MainHub = () => {
   };
 
   const cardsData = data.map((artwork) => ({
-    src: artwork.image ||  "https://via.placeholder.com/400x600?text=No+Image",
+    src: artwork.image || "https://via.placeholder.com/400x600?text=No+Image",
     alt: artwork.artist || "Artiste inconnu",
     title: artwork.title || "Unknown",
   }));
@@ -52,23 +59,41 @@ const MainHub = () => {
           revolutionary contributions to the world of art
         </p>
 
-        <div className="flex items-center gap-6">
-          <div className="relative w-full ">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 flex-1" />
-            <input
-              type="text"
-              placeholder="Search artists..."
-              className="w-full text-gray-400 pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition-all"
-              value={searchInput}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="border-2 border-transparent bg-gray-800 py-2 px-3 rounded-lg hover:bg-gray-900 hover:border-fuchsia-500 transition-colors">
-            <ListFilter className="text-white" />
+        <div className="flex justify-center">
+          {" "}
+          {/* Conteneur qui centre tout */}
+          <div className="flex items-center gap-6 w-[400px]">
+            {" "}
+            {/* Largeur fixe */}
+            <div className="relative w-[340px] h-12">
+              {" "}
+              {/* Largeur fixe pour l'input */}
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search artists..."
+                className="w-full h-full text-gray-400 pl-10 pr-4 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition-all"
+                value={searchInput}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="border-2 border-transparent bg-gray-800 py-2 px-3 rounded-lg hover:bg-gray-900 hover:border-fuchsia-500 transition-colors flex-shrink-0">
+              <ListFilter className="text-white" />
+            </div>
           </div>
         </div>
 
-        <div className="relative mt-8 bg-[#0f172a] rounded-lg p-2">
+        <div className="relative mt-8 bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg p-2">
+          {/* ✅ Message si aucune œuvre n'est trouvée */}
+          {!isLoading && data.length === 0 && hasSearched && (
+            <div className="text-center text-gray-400 text-lg mt-12">
+              No artworks found for{" "}
+              <span className="text-white font-semibold">
+                {debouncedSearchTerm}
+              </span>{" "}
+              on the Rijksmuseum API.
+            </div>
+          )}
           {/* Images affichées avec effet pendant le chargement */}
           <div
             className={`grid grid-cols-2 md:grid-cols-4 gap-6 transition-all duration-500 ${
@@ -98,13 +123,6 @@ const MainHub = () => {
               </div>
             ))}
           </div>
-
-          {/* Loader par-dessus */}
-          {(isLoading || imagesLoadedCount < totalImages) && (
-            <div className="absolute inset-0 flex justify-center items-center z-10">
-              <span className="loader" />
-            </div>
-          )}
         </div>
       </div>
     </div>

@@ -16,11 +16,12 @@ export const fetchRandomArtists = async (count = 6) => {
         ps: count * 3,
         imgonly: true,
         toppieces: true,
+        type: "painting",
         _: Date.now(),
       },
     });
 
-    const { artObjects } = fullResponse;
+    const { artObjects } = fullResponse.data;
 
     if (!artObjects || !Array.isArray(artObjects)) {
       throw new Error("Réponse API inattendue");

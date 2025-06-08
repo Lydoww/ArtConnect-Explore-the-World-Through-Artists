@@ -88,8 +88,8 @@ const Carousel = () => {
   // Gestion affichage selon état
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-48 text-white">
-        Chargement des artistes...
+      <div className="flex justify-center items-center h-48 text-gray-300 mt-12">
+        Loading random artworks...
       </div>
     );
   }
