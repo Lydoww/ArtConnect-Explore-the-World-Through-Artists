@@ -4,6 +4,7 @@ import MainHub from "./pages/MainHub";
 import Navbar from "./components/ui/Navbar";
 import Footer from "./components/ui/Footer";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Artwork from "./pages/Artwork";
 
 const queryClient = new QueryClient();
 
@@ -17,6 +18,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/hub" element={<MainHub />} />
+            <Route path="/art/:id" element={<Artwork />} />
           </Routes>
         </main>
 

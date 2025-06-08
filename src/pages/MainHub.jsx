@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Search, ListFilter } from "lucide-react";
 import { useArtist } from "../hooks/useArtist";
 import { useDebounce } from "../hooks/useDebounce";
+import { Link } from "react-router-dom";
 
 const MainHub = () => {
   const [searchInput, setSearchInput] = useState("");
@@ -35,6 +36,7 @@ const MainHub = () => {
     src: artwork.image || "https://via.placeholder.com/400x600?text=No+Image",
     alt: artwork.artist || "Artiste inconnu",
     title: artwork.title || "Unknown",
+    id: artwork.id.replace(/^en-/, ""),
   }));
 
   if (error) {
@@ -102,8 +104,9 @@ const MainHub = () => {
                 : "opacity-100 blur-0"
             }`}
           >
-            {cardsData.map(({ src, alt, title }, index) => (
-              <div
+            {cardsData.map(({ src, alt, title, id }, index) => (
+              <Link
+                to={`/art/${id}`}
                 key={index}
                 className="relative rounded-lg overflow-hidden shadow-lg w-full h-[20rem] cursor-pointer group"
               >
@@ -120,7 +123,7 @@ const MainHub = () => {
                   <h3 className="text-lg font-bold">{alt}</h3>
                   <p className="text-sm text-gray-200">{title}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

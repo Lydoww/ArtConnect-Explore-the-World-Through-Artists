@@ -6,14 +6,13 @@ export const fetchArtist = async (searchTerm) => {
       params: {
         q: searchTerm,
         imgonly: true,
-        ps: 20,
+        ps: 10,
         s: "relevance",
         type: "painting",
       },
     });
 
     const artObjects = response.data?.artObjects || [];
-
 
     return artObjects
       .map((item) => ({

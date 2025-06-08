@@ -132,7 +132,7 @@ const Carousel = () => {
                 }`}
                 key={`slide-${index}`}
               >
-                <div className="relative rounded-lg overflow-hidden shadow-lg w-full h-full cursor-pointer group">
+                <div className="relative rounded-lg overflow-hidden shadow-lg w-full h-full group">
                   <img
                     src={image.src}
                     alt={image.alt}
