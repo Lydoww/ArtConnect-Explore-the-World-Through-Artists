@@ -25,7 +25,7 @@ const LandingPage = () => {
           Explore the Artists
           <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </Link>
-        <Carousel />
+        <Carousel  />
       </div>
 
       

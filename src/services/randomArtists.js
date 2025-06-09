@@ -22,6 +22,7 @@ export const fetchRandomArtists = async (count = 6) => {
     });
 
     const { artObjects } = fullResponse.data;
+    console.log(artObjects);
 
     if (!artObjects || !Array.isArray(artObjects)) {
       throw new Error("Réponse API inattendue");
@@ -45,12 +46,15 @@ export const fetchRandomArtists = async (count = 6) => {
       }
 
       seenArtists.add(artistName);
+
+      const resizedImage =
+        artwork.webImage?.url?.replace(/=s\d+/, "=s320") ||
+        artwork.headerImage?.url?.replace(/=s\d+/, "=s320") ||
+        "/placeholder-artist.jpg";
+
       uniqueArtists.push({
         name: artistName,
-        image:
-          artwork.webImage?.url ||
-          artwork.headerImage?.url ||
-          "/placeholder-artist.jpg",
+        image: resizedImage,
         artworkTitle: artwork.title || "Œuvre sans titre",
       });
     });
