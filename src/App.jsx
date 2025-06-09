@@ -5,6 +5,7 @@ import Navbar from "./components/ui/Navbar";
 import Footer from "./components/ui/Footer";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Artwork from "./pages/Artwork";
+import Gallery from "./pages/Gallery";
 
 const queryClient = new QueryClient();
 
@@ -14,10 +15,11 @@ const App = () => {
       <div className="flex flex-col min-h-screen px-4 bg-gradient-to-r from-slate-800 to-slate-900">
         <Navbar />
 
-        <main className="flex-grow">
+        <main className="flex-grow pt-16">
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/hub" element={<MainHub />} />
+            <Route path="/gallery" element={<Gallery />} />
             <Route path="/art/:id" element={<Artwork />} />
           </Routes>
         </main>

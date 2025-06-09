@@ -40,7 +40,7 @@ const MainHub = () => {
 
   return (
     <div className="flex justify-center text-center ">
-      <div className="mt-18">
+      <div>
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
           <span className="bg-gradient-to-r from-fuchsia-500 to-orange-500 bg-clip-text text-transparent">
             Artistic Masters
