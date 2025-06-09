@@ -3,30 +3,20 @@ import { Search, ListFilter } from "lucide-react";
 import { useArtist } from "../hooks/useArtist";
 import { useDebounce } from "../hooks/useDebounce";
 import { Link } from "react-router-dom";
+import MainHubSkeleton from "../components/ui/skeleton/MainHubSkeleton";
 
 const MainHub = () => {
   const [searchInput, setSearchInput] = useState("");
-  const [imagesLoadedCount, setImagesLoadedCount] = useState(0);
   const [hasSearched, setHasSearched] = useState(false);
 
   const debouncedSearchTerm = useDebounce(searchInput, 500);
   const { data = [], error, isLoading } = useArtist(debouncedSearchTerm);
 
   useEffect(() => {
-    setImagesLoadedCount(0);
-  }, [data]);
-
-  useEffect(() => {
     if (debouncedSearchTerm.trim() !== "") {
       setHasSearched(true);
     }
   }, [debouncedSearchTerm]);
-
-  const totalImages = data.length;
-
-  const handleImageLoad = () => {
-    setImagesLoadedCount((count) => count + 1);
-  };
 
   const handleInputChange = (e) => {
     setSearchInput(e.target.value);
@@ -97,34 +87,30 @@ const MainHub = () => {
             </div>
           )}
           {/* Images affichées avec effet pendant le chargement */}
-          <div
-            className={`grid grid-cols-2 md:grid-cols-4 gap-6 transition-all duration-500 ${
-              imagesLoadedCount < totalImages
-                ? "opacity-30 blur-sm"
-                : "opacity-100 blur-0"
-            }`}
-          >
-            {cardsData.map(({ src, alt, title, id }, index) => (
-              <Link
-                to={`/art/${id}`}
-                key={index}
-                className="relative rounded-lg overflow-hidden shadow-lg w-full h-[20rem] cursor-pointer group"
-              >
-                <img
-                  src={src}
-                  alt={alt}
-                  onLoad={handleImageLoad}
-                  onError={handleImageLoad}
-                  loading="lazy"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
-                <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                  <h3 className="text-lg font-bold">{alt}</h3>
-                  <p className="text-sm text-gray-200">{title}</p>
-                </div>
-              </Link>
-            ))}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {isLoading
+              ? Array.from({ length: 8 }).map((_, i) => (
+                  <MainHubSkeleton key={`skeleton-${i}`} />
+                ))
+              : cardsData.map(({ src, alt, title, id }, index) => (
+                  <Link
+                    to={`/art/${id}`}
+                    key={index}
+                    className="relative rounded-lg overflow-hidden shadow-lg w-full h-[20rem] cursor-pointer group"
+                  >
+                    <img
+                      src={src}
+                      alt={alt}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+                    <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h3 className="text-lg font-bold">{alt}</h3>
+                      <p className="text-sm text-gray-200">{title}</p>
+                    </div>
+                  </Link>
+                ))}
           </div>
         </div>
       </div>
