@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Search, ListFilter, Heart } from "lucide-react";
+import {
+  Search,
+  ListFilter,
+  Heart,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useArtist } from "../hooks/useArtist";
 import { useDebounce } from "../hooks/useDebounce";
 import { Link } from "react-router-dom";
@@ -9,15 +15,15 @@ const MainHub = () => {
   const [searchInput, setSearchInput] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
   const [savedArtwork, setSavedArtwork] = useState([]);
+  const [page, setPage] = useState(1);
 
   const debouncedSearchTerm = useDebounce(searchInput, 500);
-  const { data = [], error, isLoading } = useArtist(debouncedSearchTerm);
+  const { data = [], error, isLoading } = useArtist(debouncedSearchTerm, page);
 
   useEffect(() => {
     if (debouncedSearchTerm.trim() !== "") setHasSearched(true);
   }, [debouncedSearchTerm]);
 
-  // Charger les œuvres sauvegardées au montage
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("artwork")) || [];
     setSavedArtwork(stored);
@@ -91,7 +97,9 @@ const MainHub = () => {
           {!isLoading && data.length === 0 && hasSearched && (
             <div className="text-center text-gray-400 text-lg mt-12">
               No artworks found for{" "}
-              <span className="text-white font-semibold">{debouncedSearchTerm}</span>{" "}
+              <span className="text-white font-semibold">
+                {debouncedSearchTerm}
+              </span>{" "}
               on the Rijksmuseum API.
             </div>
           )}
@@ -119,7 +127,12 @@ const MainHub = () => {
                           className="w-5 h-5"
                           onClick={(e) => {
                             e.preventDefault();
-                            handleAddItem({ id, title, image: src, artist: alt });
+                            handleAddItem({
+                              id,
+                              title,
+                              image: src,
+                              artist: alt,
+                            });
                           }}
                         />
                       </div>
@@ -138,6 +151,27 @@ const MainHub = () => {
                   );
                 })}
           </div>
+        </div>
+        <div className="pagination-controls mt-8 flex justify-center items-center gap-6">
+          <button
+            onClick={() => setPage((p) => Math.max(p - 1, 1))}
+            disabled={page === 1}
+            className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed border"
+            aria-label="Page précédente"
+          >
+            <ChevronLeft className="text-xl text-black" />
+          </button>
+
+          <span className="text-white text-lg font-medium">Page {page}</span>
+
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={data.length < 10}
+            className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed border"
+            aria-label="Page suivante"
+          >
+            <ChevronRight className="text-xl text-black" />
+          </button>
         </div>
       </div>
     </div>

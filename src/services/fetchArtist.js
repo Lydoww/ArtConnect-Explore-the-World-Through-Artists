@@ -1,11 +1,12 @@
 import apiClient from "../api/apiClient";
 
-export const fetchArtist = async (searchTerm) => {
+export const fetchArtist = async (searchTerm, page = 1) => {
   try {
     const response = await apiClient.get("", {
       params: {
         q: searchTerm,
         imgonly: true,
+        p:  page,
         ps: 10,
         s: "relevance",
         type: "painting",
