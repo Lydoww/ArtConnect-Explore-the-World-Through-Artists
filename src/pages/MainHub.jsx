@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Search, ListFilter } from "lucide-react";
+import { Search, ListFilter, Heart } from "lucide-react";
 import { useArtist } from "../hooks/useArtist";
 import { useDebounce } from "../hooks/useDebounce";
 import { Link } from "react-router-dom";
@@ -98,6 +98,10 @@ const MainHub = () => {
                     key={index}
                     className="relative rounded-lg overflow-hidden shadow-lg w-full h-[20rem] cursor-pointer group"
                   >
+                    {/* Heart en haut à gauche */}
+                    <div className="absolute top-3 right-3 z-10 text-white opacity-70 group-hover:opacity-100 transition-opacity">
+                      <Heart className="w-5 h-5" />
+                    </div>
                     <img
                       src={src}
                       alt={alt}

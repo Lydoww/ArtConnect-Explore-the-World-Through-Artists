@@ -34,7 +34,7 @@ const Navbar = () => {
           : "bg-transparent"
       }`}
     >
-      <div className="container mx-auto px-4">
+      <div className=" mx-auto px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2">
             <Palette className="h-8 w-8 text-fuchsia-500" />
@@ -44,7 +44,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center gap-8">
             <NavLink to="/" label="Home" />
             <NavLink to="/hub" label="Artists" />
             <NavLink to="/gallery" label="Gallery" />
