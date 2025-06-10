@@ -8,15 +8,20 @@ import MainHubSkeleton from "../components/ui/skeleton/MainHubSkeleton";
 const MainHub = () => {
   const [searchInput, setSearchInput] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+  const [savedArtwork, setSavedArtwork] = useState([]);
 
   const debouncedSearchTerm = useDebounce(searchInput, 500);
   const { data = [], error, isLoading } = useArtist(debouncedSearchTerm);
 
   useEffect(() => {
-    if (debouncedSearchTerm.trim() !== "") {
-      setHasSearched(true);
-    }
+    if (debouncedSearchTerm.trim() !== "") setHasSearched(true);
   }, [debouncedSearchTerm]);
+
+  // Charger les œuvres sauvegardées au montage
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem("artwork")) || [];
+    setSavedArtwork(stored);
+  }, []);
 
   const handleInputChange = (e) => {
     setSearchInput(e.target.value);
@@ -29,8 +34,21 @@ const MainHub = () => {
     id: artwork.id.replace(/^en-/, ""),
   }));
 
+  const handleAddItem = (artwork) => {
+    const existing = JSON.parse(localStorage.getItem("artwork")) || [];
+    const alreadyExists = existing.some((item) => item.id === artwork.id);
+
+    if (!alreadyExists) {
+      const updated = [...existing, artwork];
+      localStorage.setItem("artwork", JSON.stringify(updated));
+      setSavedArtwork(updated); // Met à jour l'état local pour re-render
+      console.log("Ajouté avec succès :", artwork.title);
+    } else {
+      console.log("Œuvre déjà dans la galerie :", artwork.title);
+    }
+  };
+
   if (error) {
-    console.error("Erreur API:", error);
     return (
       <div className="flex justify-center items-center h-48 text-red-500">
         Erreur lors du chargement des oeuvres de l'artiste.
@@ -39,7 +57,7 @@ const MainHub = () => {
   }
 
   return (
-    <div className="flex justify-center text-center ">
+    <div className="flex justify-center text-center">
       <div>
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
           <span className="bg-gradient-to-r from-fuchsia-500 to-orange-500 bg-clip-text text-transparent">
@@ -51,15 +69,9 @@ const MainHub = () => {
           revolutionary contributions to the world of art
         </p>
 
-        <div className="flex justify-center">
-          {" "}
-          {/* Conteneur qui centre tout */}
+        <div className="flex justify-center mb-8">
           <div className="flex items-center gap-6 w-[400px]">
-            {" "}
-            {/* Largeur fixe */}
             <div className="relative w-[340px] h-12">
-              {" "}
-              {/* Largeur fixe pour l'input */}
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
@@ -75,46 +87,56 @@ const MainHub = () => {
           </div>
         </div>
 
-        <div className="relative mt-8">
-          {/* ✅ Message si aucune œuvre n'est trouvée */}
+        <div className="relative">
           {!isLoading && data.length === 0 && hasSearched && (
             <div className="text-center text-gray-400 text-lg mt-12">
               No artworks found for{" "}
-              <span className="text-white font-semibold">
-                {debouncedSearchTerm}
-              </span>{" "}
+              <span className="text-white font-semibold">{debouncedSearchTerm}</span>{" "}
               on the Rijksmuseum API.
             </div>
           )}
-          {/* Images affichées avec effet pendant le chargement */}
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {isLoading
               ? Array.from({ length: 8 }).map((_, i) => (
                   <MainHubSkeleton key={`skeleton-${i}`} />
                 ))
-              : cardsData.map(({ src, alt, title, id }, index) => (
-                  <Link
-                    to={`/art/${id}`}
-                    key={index}
-                    className="relative rounded-lg overflow-hidden shadow-lg w-full h-[20rem] cursor-pointer group"
-                  >
-                    {/* Heart en haut à gauche */}
-                    <div className="absolute top-3 right-3 z-10 text-white opacity-70 group-hover:opacity-100 transition-opacity">
-                      <Heart className="w-5 h-5" />
-                    </div>
-                    <img
-                      src={src}
-                      alt={alt}
-                      loading="lazy"
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
-                    <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <h3 className="text-lg font-bold">{alt}</h3>
-                      <p className="text-sm text-gray-200">{title}</p>
-                    </div>
-                  </Link>
-                ))}
+              : cardsData.map(({ src, alt, title, id }, index) => {
+                  const isSaved = savedArtwork.some((item) => item.id === id);
+
+                  return (
+                    <Link
+                      to={`/art/${id}`}
+                      key={index}
+                      className="relative rounded-lg overflow-hidden shadow-lg w-full h-[20rem] cursor-pointer group"
+                    >
+                      <div
+                        className={`absolute top-3 right-3 z-10 opacity-70 group-hover:opacity-100 transition-opacity ${
+                          isSaved ? "text-green-500" : "text-white"
+                        }`}
+                      >
+                        <Heart
+                          className="w-5 h-5"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleAddItem({ id, title, image: src, artist: alt });
+                          }}
+                        />
+                      </div>
+                      <img
+                        src={src}
+                        alt={alt}
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+                      <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <h3 className="text-lg font-bold">{alt}</h3>
+                        <p className="text-sm text-gray-200">{title}</p>
+                      </div>
+                    </Link>
+                  );
+                })}
           </div>
         </div>
       </div>
