@@ -17,11 +17,12 @@ import DownloadButton from "../components/ui/DownloadButton";
 const Artwork = () => {
   const { id } = useParams();
   const { data, error, isLoading } = useArtwork(id);
+  console.log(data)
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-r  flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-fuchsia-500 mx-auto mb-4"></div>
           <p className="text-slate-300">Loading artwork...</p>
@@ -32,7 +33,7 @@ const Artwork = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-r  flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-400 text-6xl mb-4">⚠</div>
           <h2 className="text-2xl font-bold text-red-300 mb-2">
@@ -46,7 +47,7 @@ const Artwork = () => {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-r  flex items-center justify-center">
         <div className="text-center">
           <div className="text-slate-400 text-6xl mb-4">🎨</div>
           <h2 className="text-2xl font-bold text-slate-200 mb-2">

@@ -6,7 +6,7 @@ export const fetchArtist = async (searchTerm, page = 1) => {
       params: {
         q: searchTerm,
         imgonly: true,
-        p:  page,
+        p: page,
         ps: 10,
         s: "relevance",
         type: "painting",
