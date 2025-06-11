@@ -13,17 +13,43 @@ import MainHubSkeleton from "../components/ui/skeleton/MainHubSkeleton";
 import { useSavedArtwork } from "../hooks/useSavedArtwork";
 
 const MainHub = () => {
-  const [searchInput, setSearchInput] = useState("");
-  const [hasSearched, setHasSearched] = useState(false);
-  const [page, setPage] = useState(1);
+  // Initialisation avec localStorage pour garder la recherche + page
+  const [searchInput, setSearchInput] = useState(() => {
+    return localStorage.getItem("lastSearchInput") || "";
+  });
+  const [page, setPage] = useState(() => {
+    return parseInt(localStorage.getItem("lastSearchPage") || "1", 10);
+  });
   const [addedFeedback, setAddedFeedback] = useState(new Set());
+  const [hasSearched, setHasSearched] = useState(
+    () => searchInput.trim() !== ""
+  );
 
+  // Debounce sur la recherche pour éviter trop de requêtes
   const debouncedSearchTerm = useDebounce(searchInput, 500);
+
+  // Hook de fetch avec React Query
   const { data = [], error, isLoading } = useArtist(debouncedSearchTerm, page);
   const { savedArtwork, addArtwork } = useSavedArtwork();
 
+  // Sauvegarder searchInput dans localStorage à chaque changement
   useEffect(() => {
-    if (debouncedSearchTerm.trim() !== "") setHasSearched(true);
+    localStorage.setItem("lastSearchInput", searchInput);
+  }, [searchInput]);
+
+  // Sauvegarder page dans localStorage à chaque changement
+  useEffect(() => {
+    localStorage.setItem("lastSearchPage", page.toString());
+  }, [page]);
+
+  // Mettre à jour hasSearched selon debouncedSearchTerm uniquement
+  useEffect(() => {
+    setHasSearched(debouncedSearchTerm.trim() !== "");
+  }, [debouncedSearchTerm]);
+
+  // Reset page à 1 à chaque nouvelle recherche
+  useEffect(() => {
+    setPage(1);
   }, [debouncedSearchTerm]);
 
   const handleInputChange = (e) => {
@@ -130,7 +156,7 @@ const MainHub = () => {
                       {/* Feedback local */}
                       {wasJustAdded && (
                         <div className="absolute top-10 right-3 z-20 bg-black/70 text-green-400 text-xs px-2 py-1 rounded">
-                          Added to gallery!
+                          Added to gallery !
                         </div>
                       )}
 
