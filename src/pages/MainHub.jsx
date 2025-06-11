@@ -152,27 +152,29 @@ const MainHub = () => {
                 })}
           </div>
         </div>
-        <div className="pagination-controls mt-8 flex justify-center items-center gap-6">
-          <button
-            onClick={() => setPage((p) => Math.max(p - 1, 1))}
-            disabled={page === 1}
-            className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed border"
-            aria-label="Page précédente"
-          >
-            <ChevronLeft className="text-xl text-black" />
-          </button>
+        {hasSearched && data.length > 0 && (
+          <div className="pagination-controls mt-8 flex justify-center items-center gap-6">
+            <button
+              onClick={() => setPage((p) => Math.max(p - 1, 1))}
+              disabled={page === 1}
+              className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed border"
+              aria-label="Page précédente"
+            >
+              <ChevronLeft className="text-xl text-black" />
+            </button>
 
-          <span className="text-white text-lg font-medium">Page {page}</span>
+            <span className="text-white text-lg font-medium">Page {page}</span>
 
-          <button
-            onClick={() => setPage((p) => p + 1)}
-            disabled={data.length < 10}
-            className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed border"
-            aria-label="Page suivante"
-          >
-            <ChevronRight className="text-xl text-black" />
-          </button>
-        </div>
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={data.length < 10}
+              className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed border"
+              aria-label="Page suivante"
+            >
+              <ChevronRight className="text-xl text-black" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -48,6 +48,7 @@ const Navbar = () => {
             <NavLink to="/" label="Home" />
             <NavLink to="/hub" label="Artists" />
             <NavLink to="/gallery" label="Gallery" />
+            <NavLink to="/profil" label="Profile" />
           </nav>
 
           {/* Mobile Menu Button */}
@@ -70,8 +71,8 @@ const Navbar = () => {
         <nav className="container mx-auto px-4 py-4 flex flex-col space-y-4">
           <NavLink to="/" label="Home" isMobile />
           <NavLink to="/hub" label="Artists" isMobile />
-          <NavLink to="/movements" label="Movements" isMobile />
-          <NavLink to="/timeline" label="Timeline" isMobile />
+          <NavLink to="/gallery" label="Gallery" isMobile />
+          <NavLink to="/profil" label="Profil" isMobile />
         </nav>
       </div>
     </header>

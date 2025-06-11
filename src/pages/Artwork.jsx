@@ -12,6 +12,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import ImageModal from "../components/ui/ImageModal";
+import DownloadButton from "../components/ui/DownloadButton";
 
 const Artwork = () => {
   const { id } = useParams();
@@ -99,16 +100,20 @@ const Artwork = () => {
                   />
                 </div>
                 {artwork.webImage && (
-                  <div className="p-4 bg-slate-900/70 border-t border-slate-700">
-                    <div className="flex items-center space-x-4 text-sm text-slate-300">
-                      <div className="flex items-center space-x-1">
-                        <Ruler className="w-4 h-4 text-slate-400" />
+                  <div className="p-4 bg-slate-900/70 border-t border-slate-700 flex items-center justify-between">
+                    <div className="flex items-center text-sm  text-white">
+                      <div className="flex items-center space-x-2">
+                        <Ruler className="w-4 h-4 text-white" />
                         <span>
                           {artwork.webImage.width} × {artwork.webImage.height}{" "}
                           px
                         </span>
                       </div>
                     </div>
+                    <DownloadButton
+                      imageUrl={artwork.webImage.url}
+                      fileName={`${artwork.title || "artwork"}.jpg`}
+                    />
                   </div>
                 )}
               </div>
