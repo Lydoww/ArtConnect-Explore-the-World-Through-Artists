@@ -7,12 +7,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Artwork from "./pages/Artwork";
 import Gallery from "./pages/Gallery";
 import Profil from "./pages/Profil";
+import { Toaster } from "sonner";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
+      <Toaster richColors position="top-center" />
+
       <div className="flex flex-col min-h-screen px-4 bg-gradient-to-r from-slate-800 to-slate-900">
         <Navbar />
 

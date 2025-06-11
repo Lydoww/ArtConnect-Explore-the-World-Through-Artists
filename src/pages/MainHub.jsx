@@ -10,24 +10,21 @@ import { useArtist } from "../hooks/useArtist";
 import { useDebounce } from "../hooks/useDebounce";
 import { Link } from "react-router-dom";
 import MainHubSkeleton from "../components/ui/skeleton/MainHubSkeleton";
+import { useSavedArtwork } from "../hooks/useSavedArtwork";
 
 const MainHub = () => {
   const [searchInput, setSearchInput] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
-  const [savedArtwork, setSavedArtwork] = useState([]);
   const [page, setPage] = useState(1);
+  const [addedFeedback, setAddedFeedback] = useState(new Set());
 
   const debouncedSearchTerm = useDebounce(searchInput, 500);
   const { data = [], error, isLoading } = useArtist(debouncedSearchTerm, page);
+  const { savedArtwork, addArtwork } = useSavedArtwork();
 
   useEffect(() => {
     if (debouncedSearchTerm.trim() !== "") setHasSearched(true);
   }, [debouncedSearchTerm]);
-
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("artwork")) || [];
-    setSavedArtwork(stored);
-  }, []);
 
   const handleInputChange = (e) => {
     setSearchInput(e.target.value);
@@ -35,29 +32,15 @@ const MainHub = () => {
 
   const cardsData = data.map((artwork) => ({
     src: artwork.image || "https://via.placeholder.com/400x600?text=No+Image",
-    alt: artwork.artist || "Artiste inconnu",
-    title: artwork.title || "Unknown",
+    alt: artwork.artist || "Unknown Artist",
+    title: artwork.title || "Untitled",
     id: artwork.id.replace(/^en-/, ""),
   }));
-
-  const handleAddItem = (artwork) => {
-    const existing = JSON.parse(localStorage.getItem("artwork")) || [];
-    const alreadyExists = existing.some((item) => item.id === artwork.id);
-
-    if (!alreadyExists) {
-      const updated = [...existing, artwork];
-      localStorage.setItem("artwork", JSON.stringify(updated));
-      setSavedArtwork(updated); // Met à jour l'état local pour re-render
-      console.log("Ajouté avec succès :", artwork.title);
-    } else {
-      console.log("Œuvre déjà dans la galerie :", artwork.title);
-    }
-  };
 
   if (error) {
     return (
       <div className="flex justify-center items-center h-48 text-red-500">
-        Erreur lors du chargement des oeuvres de l'artiste.
+        Error loading artworks.
       </div>
     );
   }
@@ -111,6 +94,7 @@ const MainHub = () => {
                 ))
               : cardsData.map(({ src, alt, title, id }, index) => {
                   const isSaved = savedArtwork.some((item) => item.id === id);
+                  const wasJustAdded = addedFeedback.has(id);
 
                   return (
                     <Link
@@ -118,6 +102,7 @@ const MainHub = () => {
                       key={index}
                       className="relative rounded-lg overflow-hidden shadow-lg w-full h-[20rem] cursor-pointer group"
                     >
+                      {/* Heart Icon */}
                       <div
                         className={`absolute top-3 right-3 z-10 opacity-70 group-hover:opacity-100 transition-opacity ${
                           isSaved ? "text-green-500" : "text-white"
@@ -127,21 +112,37 @@ const MainHub = () => {
                           className="w-5 h-5"
                           onClick={(e) => {
                             e.preventDefault();
-                            handleAddItem({
-                              id,
-                              title,
-                              image: src,
-                              artist: alt,
-                            });
+                            addArtwork({ id, title, image: src, artist: alt });
+
+                            // Feedback local
+                            setAddedFeedback((prev) => new Set(prev).add(id));
+                            setTimeout(() => {
+                              setAddedFeedback((prev) => {
+                                const updated = new Set(prev);
+                                updated.delete(id);
+                                return updated;
+                              });
+                            }, 2000);
                           }}
                         />
                       </div>
+
+                      {/* Feedback local */}
+                      {wasJustAdded && (
+                        <div className="absolute top-10 right-3 z-20 bg-black/70 text-green-400 text-xs px-2 py-1 rounded">
+                          Added to gallery!
+                        </div>
+                      )}
+
+                      {/* Image */}
                       <img
                         src={src}
                         alt={alt}
                         loading="lazy"
                         className="w-full h-full object-cover"
                       />
+
+                      {/* Overlay + Text */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
                       <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                         <h3 className="text-lg font-bold">{alt}</h3>
@@ -152,13 +153,14 @@ const MainHub = () => {
                 })}
           </div>
         </div>
+
         {hasSearched && data.length > 0 && (
           <div className="pagination-controls mt-8 flex justify-center items-center gap-6">
             <button
               onClick={() => setPage((p) => Math.max(p - 1, 1))}
               disabled={page === 1}
               className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed border"
-              aria-label="Page précédente"
+              aria-label="Previous page"
             >
               <ChevronLeft className="text-xl text-black" />
             </button>
@@ -169,7 +171,7 @@ const MainHub = () => {
               onClick={() => setPage((p) => p + 1)}
               disabled={data.length < 10}
               className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed border"
-              aria-label="Page suivante"
+              aria-label="Next page"
             >
               <ChevronRight className="text-xl text-black" />
             </button>
