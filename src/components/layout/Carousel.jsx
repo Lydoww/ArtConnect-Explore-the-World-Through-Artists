@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useFetchLandingPage } from "../../hooks/useFetchLandingPage";
-import CarouselSkeleton from "./skeleton/CarouselSkeleton";
+import CarouselSkeleton from "../ui/skeleton/CarouselSkeleton";
 
 const Carousel = () => {
   const { data = [], error, isLoading } = useFetchLandingPage();

@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import MainHub from "./pages/MainHub";
-import Navbar from "./components/ui/Navbar";
-import Footer from "./components/ui/Footer";
+import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Artwork from "./pages/Artwork";
 import Gallery from "./pages/Gallery";

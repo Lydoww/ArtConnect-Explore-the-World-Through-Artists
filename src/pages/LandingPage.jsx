@@ -1,5 +1,5 @@
 import { ArrowRight } from "lucide-react";
-import Carousel from "@/components/ui/Carousel";
+import Carousel from "../components/layout/Carousel";
 import { Link } from "react-router-dom";
 
 const LandingPage = () => {
