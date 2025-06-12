@@ -10,7 +10,7 @@ const ArtworkCard = ({
   id,
   isSaved,
   wasJustAdded,
-  onAddArtwork,
+  onToggleArtwork,
 }) => (
   <Link
     to={`/art/${id}`}
@@ -19,8 +19,8 @@ const ArtworkCard = ({
     <HeartIcon
       isSaved={isSaved}
       onClick={(e) => {
-        e.preventDefault(); 
-        onAddArtwork({ id, title, image: src, artist: alt });
+        e.preventDefault();
+        onToggleArtwork({ id, title, image: src, artist: alt });
       }}
     />
 

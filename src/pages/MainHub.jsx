@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  ListFilter,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { ListFilter, ChevronLeft, ChevronRight } from "lucide-react";
 import { useArtist } from "../hooks/useArtist";
 import { useDebounce } from "../hooks/useDebounce";
 import { useSavedArtwork } from "../hooks/useSavedArtwork";
@@ -16,11 +12,13 @@ import MainHubSkeleton from "../components/ui/skeleton/MainHubSkeleton";
 const MainHub = () => {
   const { searchInput, setSearchInput, page, setPage } = useSearchState();
   const [addedFeedback, setAddedFeedback] = useState(new Set());
-  const [hasSearched, setHasSearched] = useState(() => searchInput.trim() !== "");
+  const [hasSearched, setHasSearched] = useState(
+    () => searchInput.trim() !== ""
+  );
 
   const debouncedSearchTerm = useDebounce(searchInput, 500);
   const { data = [], error, isLoading } = useArtist(debouncedSearchTerm, page);
-  const { savedArtwork, addArtwork } = useSavedArtwork();
+  const { savedArtwork, addArtwork, removeArtwork } = useSavedArtwork();
 
   // Gère changement d'état de recherche
   useEffect(() => {
@@ -38,6 +36,17 @@ const MainHub = () => {
         return updated;
       });
     }, 2000);
+  };
+
+  const handleToggleArtwork = (artwork) => {
+    const id = artwork.id.replace(/^en-/, "");
+    const isSaved = savedArtwork.some((item) => item.id === id);
+
+    if (isSaved) {
+      removeArtwork(id);
+    } else {
+      addArtwork({ ...artwork, id });
+    }
   };
 
   if (error) {
@@ -79,17 +88,24 @@ const MainHub = () => {
         {!isLoading && data.length === 0 && hasSearched && (
           <div className="text-center text-gray-400 text-lg mt-12">
             No artworks found for{" "}
-            <span className="text-white font-semibold">{debouncedSearchTerm}</span>.
+            <span className="text-white font-semibold">
+              {debouncedSearchTerm}
+            </span>
+            .
           </div>
         )}
 
         {/* Artwork Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {isLoading
-            ? Array.from({ length: 8 }).map((_, i) => <MainHubSkeleton key={i} />)
+            ? Array.from({ length: 8 }).map((_, i) => (
+                <MainHubSkeleton key={i} />
+              ))
             : data.map((artwork, index) => {
                 const id = artwork.id.replace(/^en-/, "");
-                const src = artwork.image || "https://via.placeholder.com/400x600?text=No+Image";
+                const src =
+                  artwork.image ||
+                  "https://via.placeholder.com/400x600?text=No+Image";
                 const alt = artwork.artist || "Unknown Artist";
                 const title = artwork.title || "Untitled";
                 const isSaved = savedArtwork.some((item) => item.id === id);
@@ -104,7 +120,7 @@ const MainHub = () => {
                     title={title}
                     isSaved={isSaved}
                     wasJustAdded={wasJustAdded}
-                    onAddArtwork={handleAddArtwork}
+                    onToggleArtwork={() => handleToggleArtwork(artwork)}
                   />
                 );
               })}

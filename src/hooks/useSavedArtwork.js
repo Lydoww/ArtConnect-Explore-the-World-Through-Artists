@@ -8,7 +8,7 @@ export function useSavedArtwork() {
     const stored = JSON.parse(localStorage.getItem("artwork")) || [];
     setSavedArtwork(stored);
   }, []);
-  console.log("saved work:", savedArtwork)
+  console.log("saved work:", savedArtwork);
 
   // Ajouter une œuvre
   const addArtwork = (artwork) => {
@@ -33,6 +33,14 @@ export function useSavedArtwork() {
       localStorage.setItem("artwork", JSON.stringify(updated));
       setSavedArtwork(updated);
     }
+  };
+
+  // Supprimer une œuvre
+  const removeArtwork = (idToRemove) => {
+    const stored = JSON.parse(localStorage.getItem("artwork")) || [];
+    const updated = stored.filter((item) => item.id !== idToRemove);
+    localStorage.setItem("artwork", JSON.stringify(updated));
+    setSavedArtwork(updated);
   };
 
   // Compter le nombre d’œuvres par style
@@ -64,5 +72,6 @@ export function useSavedArtwork() {
     addArtwork,
     recentArtworks,
     styleCounts,
+    removeArtwork,
   };
 }
