@@ -1,5 +1,5 @@
-import Card from "../Card";
-import Badge from "../Badge";
+import Card from "./Card";
+import Badge from "./Badge";
 
 const InsightsTab = ({ favoriteArtists, artStyles }) => (
   <div className="space-y-8">

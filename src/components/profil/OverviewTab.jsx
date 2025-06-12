@@ -1,6 +1,6 @@
 import { Palette, Bookmark, TrendingUp, Clock, Heart } from "lucide-react";
-import Card from "../Card";
-import Badge from "../Badge";
+import Card from "./Card";
+import Badge from "./Badge";
 
 const OverviewTab = ({
   recentArtworks,

@@ -1,4 +1,4 @@
-import TabButton from "../TabButton";
+import TabButton from "./TabButton";
 
 export const TabsNavigation = ({ activeTab, setActiveTab }) => (
   <div className="mb-8">
