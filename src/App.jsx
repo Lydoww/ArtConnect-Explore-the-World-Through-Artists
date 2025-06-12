@@ -5,7 +5,6 @@ import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Artwork from "./pages/Artwork";
-import Gallery from "./pages/Gallery";
 import Profil from "./pages/Profil";
 import { Toaster } from "sonner";
 
@@ -23,7 +22,6 @@ const App = () => {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/hub" element={<MainHub />} />
-            <Route path="/gallery" element={<Gallery />} />
             <Route path="/profil" element={<Profil />} />
             <Route path="/art/:id" element={<Artwork />} />
           </Routes>

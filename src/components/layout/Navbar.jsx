@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Palette, Menu, X } from "lucide-react";
 
@@ -47,7 +47,6 @@ const Navbar = () => {
           <nav className="hidden md:flex items-center gap-8">
             <NavLink to="/" label="Home" />
             <NavLink to="/hub" label="Artists" />
-            <NavLink to="/gallery" label="Gallery" />
             <NavLink to="/profil" label="Profile" />
           </nav>
 
@@ -71,7 +70,6 @@ const Navbar = () => {
         <nav className="container mx-auto px-4 py-4 flex flex-col space-y-4">
           <NavLink to="/" label="Home" isMobile />
           <NavLink to="/hub" label="Artists" isMobile />
-          <NavLink to="/gallery" label="Gallery" isMobile />
           <NavLink to="/profil" label="Profil" isMobile />
         </nav>
       </div>
