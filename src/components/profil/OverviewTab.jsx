@@ -122,7 +122,7 @@ const OverviewTab = ({
           <div className="col-span-3 text-center py-10 border border-dashed border-white/10 rounded-lg">
             <Heart className="mx-auto text-rose-400 mb-2" size={24} />
             <p className="text-slate-300">
-              Start saving artworks to build your collection
+              You need to save artworks...
             </p>
           </div>
         )}

@@ -1,29 +1,14 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { fetchRecommendations } from "../services/fetchRecommendations";
 import { useSavedArtwork } from "./useSavedArtwork";
 
 export const useRecommendations = () => {
   const { savedArtwork } = useSavedArtwork();
-  const [recommendations, setRecommendations] = useState([]);
-   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetch = async () => {
-      if (savedArtwork.length === 0) {
-
-        setRecommendations([])
-        setLoading(false);
-        return 
-      } 
-
-      setLoading(true)
-      const data = await fetchRecommendations({ savedArtwork });
-      setRecommendations(data)
-      setLoading(false)
-    };
-
-    fetch();
-  }, [savedArtwork]);
-
-  return {recommendations, loading};
+  return useQuery({
+    queryKey: ["recommendations", savedArtwork.map(a => a.id)],
+    queryFn: () => fetchRecommendations({ savedArtwork }),
+    enabled: savedArtwork.length > 0,
+    staleTime: 1000 * 60 * 5,
+  });
 };

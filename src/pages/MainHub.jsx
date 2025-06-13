@@ -7,7 +7,6 @@ import { useSearchState } from "../hooks/useSearchState";
 
 import ArtworkCard from "../components/mainhub/ArtworkCard";
 import SearchBar from "../components/mainhub/SearchBar";
-import MainHubSkeleton from "../components/ui/skeleton/MainHubSkeleton";
 import ArtworkCardSkeleton from "../components/ui/skeleton/ArtworkCardSkeleton";
 
 const MainHub = () => {
@@ -27,17 +26,6 @@ const MainHub = () => {
     setPage(1);
   }, [debouncedSearchTerm]);
 
-  const handleAddArtwork = (artwork) => {
-    addArtwork(artwork);
-    setAddedFeedback((prev) => new Set(prev).add(artwork.id));
-    setTimeout(() => {
-      setAddedFeedback((prev) => {
-        const updated = new Set(prev);
-        updated.delete(artwork.id);
-        return updated;
-      });
-    }, 2000);
-  };
 
   const handleToggleArtwork = (artwork) => {
     const id = artwork.id.replace(/^en-/, "");
