@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useProfileData } from "../hooks/useProfileData";
 import { HeroSection } from "../components/profil/HeroSection";
 import { TabsNavigation } from "../components/profil/TabsNavigation";
@@ -7,6 +7,10 @@ import CollectionTab from "../components/profil/CollectionTab";
 import InsightsTab from "../components/profil/InsightTab";
 
 const Profile = () => {
+  const [selectedAvatar, setSelectedAvatar] = useState(() => {
+    const savedAvatar = localStorage.getItem("selectedAvatar");
+    return savedAvatar ? JSON.parse(savedAvatar) : null;
+  });
   const [activeTab, setActiveTab] = useState("overview");
   const {
     savedArtwork,
@@ -16,9 +20,21 @@ const Profile = () => {
     artStyles,
   } = useProfileData();
 
+  useEffect(() => {
+    if (selectedAvatar) {
+      localStorage.setItem("selectedAvatar", JSON.stringify(selectedAvatar));
+    } else {
+      localStorage.removeItem("selectedAvatar");
+    }
+  }, [selectedAvatar]);
+
   return (
     <div className="min-h-screen">
-      <HeroSection savedArtwork={savedArtwork} />
+      <HeroSection
+        savedArtwork={savedArtwork}
+        selectedAvatar={selectedAvatar}
+        onAvatarSelect={setSelectedAvatar}
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-white">
         <TabsNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
