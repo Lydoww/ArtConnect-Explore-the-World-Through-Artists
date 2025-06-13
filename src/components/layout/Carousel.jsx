@@ -7,7 +7,26 @@ import CarouselSkeleton from "../ui/skeleton/CarouselSkeleton";
 const Carousel = () => {
   const { data = [], error, isLoading } = useFetchLandingPage();
 
-  // Transforme les artistes en images pour le carousel
+  const containerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(960);
+
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+
+    updateSize(); // Initial size
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
+  // Détermine le nombre de slides visibles selon la largeur du container
+  const visibleSlides =
+    containerWidth < 640 ? 1 : containerWidth < 1024 ? 2 : 3;
+  const slideWidth = containerWidth / visibleSlides;
+
   const originalImages = useMemo(
     () =>
       data.map((artist) => ({
@@ -18,7 +37,6 @@ const Carousel = () => {
     [data]
   );
 
-  // Images étendues pour boucle infinie
   const extendedImages = useMemo(
     () => [
       ...originalImages.slice(-1),
@@ -27,9 +45,6 @@ const Carousel = () => {
     ],
     [originalImages]
   );
-
-  const visibleSlides = 3;
-  const slideWidth = 320;
 
   const slidesToRender = isLoading
     ? Array.from({ length: visibleSlides + 2 }).map((_, i) => ({
@@ -46,8 +61,8 @@ const Carousel = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const timeoutRef = useRef(null);
 
-  // Navigation
   const isDisabled = isAnimating || isLoading || originalImages.length === 0;
+
   const prevSlide = () => {
     if (isDisabled) return;
     setIsAnimating(true);
@@ -66,7 +81,6 @@ const Carousel = () => {
     setCurrentIndex(index + 1);
   };
 
-  // Gestion boucle infinie et reset animation
   useEffect(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
@@ -85,21 +99,15 @@ const Carousel = () => {
     };
   }, [currentIndex, originalImages.length]);
 
-  // Calcul offset pour centrer slide active
   const getOffset = () => {
     return -currentIndex * slideWidth + ((visibleSlides - 1) * slideWidth) / 2;
   };
 
-  // Index réel pour les dots
   const getRealIndex = () => {
     if (currentIndex === 0) return originalImages.length - 1;
     if (currentIndex === originalImages.length + 1) return 0;
     return currentIndex - 1;
   };
-
-  useEffect(() => {
-    console.log("Artists count:", data.length);
-  }, [data]);
 
   if (error) {
     return (
@@ -111,7 +119,11 @@ const Carousel = () => {
 
   return (
     <div className="relative flex flex-col items-center py-8">
-      <div className="overflow-hidden w-[60rem] h-[20rem] mx-auto min-h-[20rem]">
+      <div
+        ref={containerRef}
+        className="overflow-hidden w-full max-w-[60rem] mx-auto"
+        style={{ height: 320, minHeight: 320 }}
+      >
         <motion.div
           className="flex"
           animate={{ x: getOffset() }}
@@ -126,10 +138,11 @@ const Carousel = () => {
 
             return (
               <motion.div
-                className={`p-2 min-w-[20rem] h-[20rem] transition-all duration-300 ${
+                key={slide.key}
+                className={`p-2 transition-all duration-300 ${
                   isActive ? "scale-105" : "scale-95 opacity-80"
                 }`}
-                key={slide.key}
+                style={{ minWidth: slideWidth, height: 320 }}
               >
                 <div className="relative rounded-lg overflow-hidden shadow-lg w-full h-full group bg-gray-800">
                   {slide.isSkeleton ? (
@@ -139,14 +152,14 @@ const Carousel = () => {
                       <img
                         src={slide.src}
                         alt={slide.alt}
-                        loading={index >= 1 && index <= 3 ? "eager" : "lazy"}
+                        loading={
+                          index >= 1 && index <= visibleSlides
+                            ? "eager"
+                            : "lazy"
+                        }
                         className="w-full h-full object-cover"
                       />
-
-                      {/* Overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
-
-                      {/* Texte superposé */}
                       <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                         <h3 className="text-lg font-bold">{slide.alt}</h3>
                         <p className="text-sm text-gray-200">{slide.title}</p>
