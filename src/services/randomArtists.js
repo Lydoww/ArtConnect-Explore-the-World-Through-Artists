@@ -48,8 +48,8 @@ export const fetchRandomArtists = async (count = 6) => {
       seenArtists.add(artistName);
 
       const resizedImage =
-        artwork.webImage?.url?.replace(/=s\d+/, "=s320") ||
-        artwork.headerImage?.url?.replace(/=s\d+/, "=s320") ||
+        artwork.webImage?.url?.replace(/=s\d+/, "=s800") ||
+        artwork.headerImage?.url?.replace(/=s\d+/, "=s800") ||
         "/placeholder-artist.jpg";
 
       uniqueArtists.push({
