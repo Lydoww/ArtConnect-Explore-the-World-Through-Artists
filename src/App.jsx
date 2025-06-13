@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Artwork from "./pages/Artwork";
 import Profil from "./pages/Profil";
 import { Toaster } from "sonner";
+import AboutPage from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,8 @@ const App = () => {
             <Route path="/" element={<LandingPage />} />
             <Route path="/hub" element={<MainHub />} />
             <Route path="/profil" element={<Profil />} />
+            <Route path="/about" element={<AboutPage />} />
+
             <Route path="/art/:id" element={<Artwork />} />
           </Routes>
         </main>

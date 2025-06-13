@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Footer = () => {
   return (
     <footer className="text-sm text-white mt-12 py-6 border-t border-white/20 flex flex-col justify-between text-center">
@@ -14,15 +16,10 @@ const Footer = () => {
         >
           Alexis Helm
         </a>
-        . Data from{" "}
-        <a
-          href="https://www.rijksmuseum.nl/en"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline hover:text-fuchsia-400"
-        >
-          The Rijksmuseum API
-        </a>
+        . Data source explained in{" "}
+        <Link to="/about" className="underline hover:text-fuchsia-400">
+          Here
+        </Link>
         .
       </p>
     </footer>
