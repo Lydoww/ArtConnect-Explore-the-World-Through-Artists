@@ -1,23 +1,21 @@
 import Card from "./Card";
 import Badge from "./Badge";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useRecommendations } from "../../hooks/useRecommendations ";
+import { RecommendationSkeleton } from "../ui/skeleton/RecommendationSkeleton";
 
 const InsightsTab = ({ favoriteArtists, artStyles }) => {
-  const [recoData, setRecoData] = useState([]);
+  const { recommendations, loading } = useRecommendations();
 
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("artwork"));
-    if (Array.isArray(data)) {
-      setRecoData(data);
-    }
-  }, []);
+  if (loading) {
+    return <RecommendationSkeleton />;
+  }
 
   return (
     <div className="space-y-8">
       <h2 className="text-xl font-semibold text-white">Your Art Insights</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
         <Card>
           <div className="p-6">
             <h3 className="text-lg font-medium text-white mb-4">
@@ -63,7 +61,7 @@ const InsightsTab = ({ favoriteArtists, artStyles }) => {
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {recoData.slice(0, 3).map(({ id, title, image, artist }) => (
+            {recommendations.slice(0, 3).map(({ id, title, image, artist }) => (
               <Link
                 to={`/art/${id}`}
                 key={id}

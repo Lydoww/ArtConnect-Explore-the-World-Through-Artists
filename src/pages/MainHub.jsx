@@ -8,6 +8,7 @@ import { useSearchState } from "../hooks/useSearchState";
 import ArtworkCard from "../components/mainhub/ArtworkCard";
 import SearchBar from "../components/mainhub/SearchBar";
 import MainHubSkeleton from "../components/ui/skeleton/MainHubSkeleton";
+import ArtworkCardSkeleton from "../components/ui/skeleton/ArtworkCardSkeleton";
 
 const MainHub = () => {
   const { searchInput, setSearchInput, page, setPage } = useSearchState();
@@ -96,34 +97,36 @@ const MainHub = () => {
         )}
 
         {/* Artwork Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {isLoading
-            ? Array.from({ length: 8 }).map((_, i) => (
-                <MainHubSkeleton key={i} />
-              ))
-            : data.map((artwork, index) => {
-                const id = artwork.id.replace(/^en-/, "");
-                const src =
-                  artwork.image ||
-                  "https://via.placeholder.com/400x600?text=No+Image";
-                const alt = artwork.artist || "Unknown Artist";
-                const title = artwork.title || "Untitled";
-                const isSaved = savedArtwork.some((item) => item.id === id);
-                const wasJustAdded = addedFeedback.has(id);
+        <div className="w-full">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {isLoading
+              ? Array.from({ length: 8 }).map((_, i) => (
+                  <ArtworkCardSkeleton className="flex flex-wrap" key={i} />
+                ))
+              : data.map((artwork, index) => {
+                  const id = artwork.id.replace(/^en-/, "");
+                  const src =
+                    artwork.image ||
+                    "https://via.placeholder.com/400x600?text=No+Image";
+                  const alt = artwork.artist || "Unknown Artist";
+                  const title = artwork.title || "Untitled";
+                  const isSaved = savedArtwork.some((item) => item.id === id);
+                  const wasJustAdded = addedFeedback.has(id);
 
-                return (
-                  <ArtworkCard
-                    key={index}
-                    id={id}
-                    src={src}
-                    alt={alt}
-                    title={title}
-                    isSaved={isSaved}
-                    wasJustAdded={wasJustAdded}
-                    onToggleArtwork={() => handleToggleArtwork(artwork)}
-                  />
-                );
-              })}
+                  return (
+                    <ArtworkCard
+                      key={index}
+                      id={id}
+                      src={src}
+                      alt={alt}
+                      title={title}
+                      isSaved={isSaved}
+                      wasJustAdded={wasJustAdded}
+                      onToggleArtwork={() => handleToggleArtwork(artwork)}
+                    />
+                  );
+                })}
+          </div>
         </div>
 
         {/* Pagination */}
