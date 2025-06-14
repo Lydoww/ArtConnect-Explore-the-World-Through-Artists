@@ -1,19 +1,12 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, CircleX } from "lucide-react";
+import { useArtworkStore } from "../../stores/useArtworkStore";
 
 const CollectionTab = () => {
-  const [savedArtwork, setSavedArtwork] = useState([]);
-
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("artwork")) || [];
-    setSavedArtwork(data);
-  }, []);
+  const savedArtwork = useArtworkStore((s) => s.savedArtwork);
 
   const handleDelete = (idToRemove) => {
-    const updated = savedArtwork.filter((art) => art.id !== idToRemove);
-    localStorage.setItem("artwork", JSON.stringify(updated));
-    setSavedArtwork(updated);
+    useArtworkStore.getState().removeArtwork(idToRemove);
   };
 
   return (
@@ -49,8 +42,12 @@ const CollectionTab = () => {
                 />
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
-                <h3 className="text-white font-medium text-sm">{title || "Untitled"}</h3>
-                <p className="text-slate-300 text-xs">{artist || "Unknown Artist"}</p>
+                <h3 className="text-white font-medium text-sm">
+                  {title || "Untitled"}
+                </h3>
+                <p className="text-slate-300 text-xs">
+                  {artist || "Unknown Artist"}
+                </p>
               </div>
             </Link>
           ))}

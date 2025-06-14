@@ -1,5 +1,12 @@
-const TabButton = ({ value, children, isActive, onClick }) => (
+const TabButton = ({
+  value,
+  children,
+  isActive,
+  onClick,
+  "data-cy": dataCy,
+}) => (
   <button
+    data-cy={dataCy}
     onClick={() => onClick(value)}
     className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
       isActive

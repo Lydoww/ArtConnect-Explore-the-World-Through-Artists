@@ -23,6 +23,7 @@ export const AvatarSelector = ({
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <button
+          data-cy="avatar-trigger"
           className={`h-36 w-36 rounded-full border-4 border-[#0a0a0c] overflow-hidden bg-black/30 backdrop-blur-sm flex items-center justify-center cursor-pointer ${className}`}
           aria-label="Change avatar"
         >
@@ -47,6 +48,7 @@ export const AvatarSelector = ({
           {avatars.map((avatar) => (
             <DropdownMenu.Item
               key={avatar.id}
+              data-cy={`avatar-item-${avatar.id}`}
               onSelect={() => onSelect(avatar)}
               className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-900 cursor-pointer outline-none"
             >

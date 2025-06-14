@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import SearchBar from "../SearchBar";
 
 describe("SearchBar", () => {
-  it("rend le champ de recherche avec le placeholder correct", () => {
+  it("renders the search input with the correct placeholder", () => {
     render(<SearchBar searchInput="" handleInputChange={() => {}} />);
 
     const input = screen.getByPlaceholderText(
@@ -11,14 +11,14 @@ describe("SearchBar", () => {
     expect(input).toBeInTheDocument();
   });
 
-  it("affiche la valeur passée en props", () => {
+  it("displays the value passed via props", () => {
     render(<SearchBar searchInput="Rembrandt" handleInputChange={() => {}} />);
 
     const input = screen.getByDisplayValue("Rembrandt");
     expect(input).toBeInTheDocument();
   });
 
-  it("appelle handleInputChange quand on tape dans le champ", () => {
+  it("calls handleInputChange when typing in the input", () => {
     const handleChangeMock = vi.fn();
 
     render(<SearchBar searchInput="" handleInputChange={handleChangeMock} />);
