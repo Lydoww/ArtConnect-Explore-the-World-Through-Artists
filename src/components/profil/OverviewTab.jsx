@@ -3,7 +3,6 @@ import Card from "./Card";
 import Badge from "./Badge";
 import { useRecommendations } from "../../hooks/useRecommendations ";
 
-
 const OverviewTab = ({ recentArtworks, favoriteArtists }) => {
   const { data: recommendations = [], isLoading } = useRecommendations();
 
@@ -34,7 +33,7 @@ const OverviewTab = ({ recentArtworks, favoriteArtists }) => {
             </div>
             <div className="space-y-3 flex-grow">
               {favoriteArtists.length > 0 ? (
-                favoriteArtists.map((artist, i) => (
+                favoriteArtists.slice(0, 3).map((artist, i) => (
                   <div key={artist} className="flex items-center gap-2">
                     <span className="text-white/70 text-sm">{i + 1}.</span>
                     <span className="text-white">{artist}</span>
