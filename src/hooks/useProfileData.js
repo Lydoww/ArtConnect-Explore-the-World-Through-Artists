@@ -1,23 +1,35 @@
-import { useSavedArtwork } from "./useSavedArtwork";
+import { useMemo } from "react";
+import { useArtworkStore } from "../stores/useArtworkStore";
 
 export const useProfileData = () => {
-  const { savedArtwork, recentArtworks, styleCounts } = useSavedArtwork();
+  const savedArtwork = useArtworkStore((s) => s.savedArtwork);
+  const getStyleCounts = useArtworkStore.getState().getStyleCounts;
+  const getRecentArtworks = useArtworkStore.getState().getRecentArtworks;
 
-  const artistCounts = savedArtwork.reduce((acc, artwork) => {
-    const artist = artwork.artist || "Unknown Artist";
-    acc[artist] = (acc[artist] || 0) + 1;
-    return acc;
-  }, {});
+  const styleCounts = useMemo(() => getStyleCounts(), [savedArtwork]);
+  const recentArtworks = useMemo(() => getRecentArtworks(), [savedArtwork]);
 
-  const favoriteArtists = Object.entries(artistCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([artist]) => artist);
+  const artistCounts = useMemo(() => {
+    return savedArtwork.reduce((acc, { artist }) => {
+      const name = artist || "Unknown Artist";
+      acc[name] = (acc[name] || 0) + 1;
+      return acc;
+    }, {});
+  }, [savedArtwork]);
 
-  const artStyles = Object.entries(styleCounts)
-    .sort(([, countA], [, countB]) => countB - countA)
-    .map(([style]) => style)
-    .slice(0, 6);
+  const favoriteArtists = useMemo(() => {
+    return Object.entries(artistCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([name]) => name);
+  }, [artistCounts]);
+
+  const artStyles = useMemo(() => {
+    return Object.entries(styleCounts)
+      .sort(([, countA], [, countB]) => countB - countA)
+      .map(([style]) => style)
+      .slice(0, 6);
+  }, [styleCounts]);
 
   return {
     savedArtwork,

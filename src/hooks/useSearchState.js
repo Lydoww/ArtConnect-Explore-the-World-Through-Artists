@@ -1,20 +1,11 @@
-import { useState, useEffect } from "react";
+// hooks/useSearchState.js
+import { useSearchStore } from "../stores/useSearchStore";
 
 export const useSearchState = () => {
-  const [searchInput, setSearchInput] = useState(() => {
-    return localStorage.getItem("lastSearchInput") || "";
-  });
-  const [page, setPage] = useState(() => {
-    return parseInt(localStorage.getItem("lastSearchPage") || "1", 10);
-  });
+  const searchInput = useSearchStore((s) => s.searchInput);
+  const page = useSearchStore((s) => s.page);
+  const setSearchInput = useSearchStore((s) => s.setSearchInput);
+  const setPage = useSearchStore((s) => s.setPage);
 
-  useEffect(() => {
-    localStorage.setItem("lastSearchInput", searchInput);
-  }, [searchInput]);
-
-  useEffect(() => {
-    localStorage.setItem("lastSearchPage", page.toString());
-  }, [page]);
-
-  return { searchInput, setSearchInput, page, setPage };
+  return { searchInput, page, setSearchInput, setPage };
 };

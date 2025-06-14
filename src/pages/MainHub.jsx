@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ListFilter, ChevronLeft, ChevronRight } from "lucide-react";
 import { useArtist } from "../hooks/useArtist";
 import { useDebounce } from "../hooks/useDebounce";
-import { useSavedArtwork } from "../hooks/useSavedArtwork";
+import { useArtworkStore } from "../stores/useArtworkStore";
 import { useSearchState } from "../hooks/useSearchState";
 
 import ArtworkCard from "../components/mainhub/ArtworkCard";
@@ -18,14 +18,15 @@ const MainHub = () => {
 
   const debouncedSearchTerm = useDebounce(searchInput, 500);
   const { data = [], error, isLoading } = useArtist(debouncedSearchTerm, page);
-  const { savedArtwork, addArtwork, removeArtwork } = useSavedArtwork();
+  const savedArtwork = useArtworkStore((s) => s.savedArtwork);
+  const addArtwork = useArtworkStore((s) => s.addArtwork);
+  const removeArtwork = useArtworkStore((s) => s.removeArtwork);
 
   // Gère changement d'état de recherche
   useEffect(() => {
     setHasSearched(debouncedSearchTerm.trim() !== "");
     setPage(1);
   }, [debouncedSearchTerm]);
-
 
   const handleToggleArtwork = (artwork) => {
     const id = artwork.id.replace(/^en-/, "");
@@ -67,9 +68,9 @@ const MainHub = () => {
               searchInput={searchInput}
               handleInputChange={(e) => setSearchInput(e.target.value)}
             />
-            <div className="border-2 border-transparent bg-gray-800 py-2 px-3 rounded-lg hover:bg-gray-900 hover:border-fuchsia-500 transition-colors flex-shrink-0">
+            {/* <div className="border-2 border-transparent bg-gray-800 py-2 px-3 rounded-lg hover:bg-gray-900 hover:border-fuchsia-500 transition-colors flex-shrink-0">
               <ListFilter className="text-white" />
-            </div>
+            </div> */}
           </div>
         </div>
 
