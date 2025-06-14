@@ -22,7 +22,6 @@ export const fetchRandomArtists = async (count = 6) => {
     });
 
     const { artObjects } = fullResponse.data;
-    console.log(artObjects);
 
     if (!artObjects || !Array.isArray(artObjects)) {
       throw new Error("Réponse API inattendue");

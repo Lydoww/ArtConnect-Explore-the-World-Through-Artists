@@ -38,14 +38,18 @@ export const useArtworkStore = create(
       getStyleCounts: () => {
         const counts = {};
         get().savedArtwork.forEach((artwork) => {
-          const styles = artwork.style?.split(", ") || ["Unknown"];
+          const styles = artwork.style?.split(", ") || [];
           styles.forEach((style) => {
             const cleaned = style.trim();
-            counts[cleaned] = (counts[cleaned] || 0) + 1;
+            if (cleaned && cleaned !== "Unknown") {
+              counts[cleaned] = (counts[cleaned] || 0) + 1;
+            }
           });
         });
         return counts;
       },
+
+      
 
       getRecentArtworks: () => {
         return [...get().savedArtwork]

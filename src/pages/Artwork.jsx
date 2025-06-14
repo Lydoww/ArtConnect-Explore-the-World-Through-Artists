@@ -17,7 +17,7 @@ import DownloadButton from "../components/ui/DownloadButton";
 const Artwork = () => {
   const { id } = useParams();
   const { data, error, isLoading } = useArtwork(id);
-  console.log(data)
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (isLoading) {

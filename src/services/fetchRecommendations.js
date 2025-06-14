@@ -3,7 +3,7 @@ import apiClient from "../api/apiClient";
 // Recommande d'autres œuvres des artistes les plus likés
 export const fetchRecommendations = async ({ savedArtwork }, limit = 3) => {
   const results = [];
-  const seenIds = new Set(savedArtwork.map((a) => a.id)); 
+  const seenIds = new Set(savedArtwork.map((a) => a.id));
 
   // Compter les artistes les plus likés
   const artistCounts = {};
@@ -23,7 +23,7 @@ export const fetchRecommendations = async ({ savedArtwork }, limit = 3) => {
         params: {
           q: artist,
           imgonly: true,
-          ps: 20, 
+          ps: 20,
           type: "painting",
           s: "relevance",
         },
@@ -38,14 +38,24 @@ export const fetchRecommendations = async ({ savedArtwork }, limit = 3) => {
       if (filtered.length > 0) {
         const picked = filtered[Math.floor(Math.random() * filtered.length)];
 
-        results.push({
-          id: picked.objectNumber, 
-          title: picked.title,
-          artist: picked.principalOrFirstMaker,
-          image: picked.webImage.url, 
-        });
+        const detailRes = await apiClient.get(`/${picked.objectNumber}`);
+        const enriched = detailRes?.data?.artObject;
 
-        seenIds.add(picked.objectNumber); 
+        if (!enriched) {
+          console.warn("Détail manquant pour :", picked.objectNumber);
+          continue; // passe à l’artiste suivant
+        }
+
+        results.push({
+          id: enriched.objectNumber,
+          title: enriched.title,
+          artist: enriched.principalOrFirstMaker,
+          image: enriched.webImage?.url,
+          styles: enriched.objectTypes || [],
+          techniques: enriched.materials || [],
+          period: enriched.dating?.presentingDate || null,
+          culture: enriched.productionPlaces?.[0] || null,
+        });
       }
     } catch (err) {
       console.error("Erreur recommandation pour:", artist, err);

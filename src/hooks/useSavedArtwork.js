@@ -8,7 +8,7 @@ export function useSavedArtwork() {
     const stored = JSON.parse(localStorage.getItem("artwork")) || [];
     setSavedArtwork(stored);
   }, []);
-  console.log("saved work:", savedArtwork);
+  
 
   // Ajouter une œuvre
   const addArtwork = (artwork) => {

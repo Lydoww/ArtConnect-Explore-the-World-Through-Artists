@@ -1,11 +1,32 @@
+import React from "react";
 import Card from "./Card";
 import Badge from "./Badge";
 import { Link } from "react-router-dom";
-import { useRecommendations } from "../../hooks/useRecommendations ";
-import { RecommendationSkeleton } from "../ui/skeleton/RecommendationSkeleton";
 
-const InsightsTab = ({ favoriteArtists, artStyles }) => {
+import { RecommendationSkeleton } from "../ui/skeleton/RecommendationSkeleton";
+import { useRecommendations } from "../../hooks/useRecommendations ";
+
+const InsightsTab = ({ favoriteArtists }) => {
   const { data: recommendations = [], isLoading } = useRecommendations();
+
+  // Calcul des styles comptés et triés
+  const styleCounts = React.useMemo(() => {
+    const counts = {};
+    recommendations.forEach((rec) => {
+      rec.styles?.forEach((style) => {
+        if (style !== "Unknown") {
+          counts[style] = (counts[style] || 0) + 1;
+        }
+      });
+    });
+    return counts;
+  }, [recommendations]);
+
+  const sortedStyles = React.useMemo(() => {
+    return Object.entries(styleCounts)
+      .sort(([, aCount], [, bCount]) => bCount - aCount)
+      .map(([style]) => style);
+  }, [styleCounts]);
 
   if (isLoading) {
     return <RecommendationSkeleton />;
@@ -45,9 +66,9 @@ const InsightsTab = ({ favoriteArtists, artStyles }) => {
 
               <div>
                 <p className="text-slate-400 mb-1">Art Styles</p>
-                {artStyles.length > 0 ? (
+                {sortedStyles.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
-                    {artStyles.map((style) => (
+                    {sortedStyles.map((style) => (
                       <Badge
                         key={style}
                         className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300"
