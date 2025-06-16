@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { ListFilter, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useArtist } from "../hooks/useArtist";
 import { useDebounce } from "../hooks/useDebounce";
 import { useArtworkStore } from "../stores/useArtworkStore";
 import { useSearchState } from "../hooks/useSearchState";
-
 import ArtworkCard from "../components/mainhub/ArtworkCard";
 import SearchBar from "../components/mainhub/SearchBar";
 import ArtworkCardSkeleton from "../components/ui/skeleton/ArtworkCardSkeleton";
+import { useFetchLandingPage } from "../hooks/useFetchLandingPage";
 
 const MainHub = () => {
   const { searchInput, setSearchInput, page, setPage } = useSearchState();
@@ -18,20 +18,23 @@ const MainHub = () => {
 
   const debouncedSearchTerm = useDebounce(searchInput, 500);
   const { data = [], error, isLoading } = useArtist(debouncedSearchTerm, page);
+  const { data: randomData = [], isLoading: isRandomLoading } =
+    useFetchLandingPage(12);
+
   const savedArtwork = useArtworkStore((s) => s.savedArtwork);
   const addArtwork = useArtworkStore((s) => s.addArtwork);
   const removeArtwork = useArtworkStore((s) => s.removeArtwork);
 
-  // Gère changement d'état de recherche
   useEffect(() => {
     setHasSearched(debouncedSearchTerm.trim() !== "");
     setPage(1);
   }, [debouncedSearchTerm]);
 
   const handleToggleArtwork = (artwork) => {
-    const id = artwork.id.replace(/^en-/, "");
-    const isSaved = savedArtwork.some((item) => item.id === id);
+    const id = artwork.id?.replace(/^en-/, "");
+    if (!id) return;
 
+    const isSaved = savedArtwork.some((item) => item.id === id);
     if (isSaved) {
       removeArtwork(id);
     } else {
@@ -46,6 +49,9 @@ const MainHub = () => {
       </div>
     );
   }
+
+  const artworksToDisplay = hasSearched ? data : randomData;
+  const loading = hasSearched ? isLoading : isRandomLoading;
 
   return (
     <div className="flex justify-center text-center">
@@ -68,9 +74,6 @@ const MainHub = () => {
               searchInput={searchInput}
               handleInputChange={(e) => setSearchInput(e.target.value)}
             />
-            {/* <div className="border-2 border-transparent bg-gray-800 py-2 px-3 rounded-lg hover:bg-gray-900 hover:border-fuchsia-500 transition-colors flex-shrink-0">
-              <ListFilter className="text-white" />
-            </div> */}
           </div>
         </div>
 
@@ -88,19 +91,24 @@ const MainHub = () => {
         {/* Artwork Grid */}
         <div className="w-full">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {isLoading
+            {loading
               ? Array.from({ length: 8 }).map((_, i) => (
                   <ArtworkCardSkeleton className="flex flex-wrap" key={i} />
                 ))
-              : data.map((artwork, index) => {
-                  const id = artwork.id.replace(/^en-/, "");
+              : artworksToDisplay.map((artwork, index) => {
+                  const id = hasSearched
+                    ? artwork.id?.replace(/^en-/, "")
+                    : undefined;
                   const src =
                     artwork.image ||
                     "https://via.placeholder.com/400x600?text=No+Image";
-                  const alt = artwork.artist || "Unknown Artist";
-                  const title = artwork.title || "Untitled";
-                  const isSaved = savedArtwork.some((item) => item.id === id);
-                  const wasJustAdded = addedFeedback.has(id);
+                  const alt =
+                    artwork.artist || artwork.name || "Unknown Artist";
+                  const title =
+                    artwork.title || artwork.artworkTitle || "Untitled";
+                  const isSaved =
+                    hasSearched && savedArtwork.some((item) => item.id === id);
+                  const wasJustAdded = hasSearched && addedFeedback.has(id);
 
                   return (
                     <ArtworkCard
@@ -111,7 +119,11 @@ const MainHub = () => {
                       title={title}
                       isSaved={isSaved}
                       wasJustAdded={wasJustAdded}
-                      onToggleArtwork={() => handleToggleArtwork(artwork)}
+                      onToggleArtwork={
+                        hasSearched
+                          ? () => handleToggleArtwork(artwork)
+                          : undefined
+                      }
                     />
                   );
                 })}
