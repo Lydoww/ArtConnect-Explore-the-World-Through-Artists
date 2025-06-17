@@ -40,7 +40,7 @@ export const RecommendationSkeleton = () => {
               <div className="w-16 h-16 rounded bg-black/50 flex-shrink-0 overflow-hidden" />
               <div>
                 <div className="flex flex-col gap-2 flex-1">
-                  <div className="h-4 w-42 bg-slate-700 rounded animate-pulse" />
+                  <div className="h-4 w-26 bg-slate-700 rounded animate-pulse" />
                   <div className="h-3 w-20 bg-slate-600 rounded animate-pulse" />
                   <div className="h-4 w-16 bg-amber-700/30 rounded animate-pulse" />
                 </div>
