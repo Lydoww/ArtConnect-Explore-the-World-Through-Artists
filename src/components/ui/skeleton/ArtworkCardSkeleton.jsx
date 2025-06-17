@@ -1,8 +1,8 @@
 const ArtworkCardSkeleton = ({ className = "" }) => (
   <div
-    className={`relative rounded-lg bg-gradient-to-t from-black/70 to-transparent overflow-hidden shadow-lg w-full aspect-[3/4] flex items-center justify-center ${className}`}
+    className={`relative rounded-lg overflow-hidden shadow-lg w-full aspect-[3/4] bg-slate-800 animate-pulse flex flex-col justify-between p-4 ${className}`}
   >
-    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-fuchsia-500" />
+  
   </div>
 );
 

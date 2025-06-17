@@ -1,7 +1,7 @@
 import { Ruler } from "lucide-react";
 import DownloadButton from "../ui/DownloadButton";
 
-const ArtworkImage = ({ artwork }) => {
+const ArtworkImage = ({ artwork, onImageClick }) => {
   return (
     <div className="lg:col-span-2">
       <div className="bg-slate-800/50 rounded-2xl shadow-lg overflow-hidden border border-slate-700">
@@ -13,7 +13,7 @@ const ArtworkImage = ({ artwork }) => {
               "/placeholder.svg"
             }
             alt={artwork.title}
-            onClick={() => setIsModalOpen(true)}
+            onClick={onImageClick}
             className="max-w-full max-h-full object-contain cursor-zoom-in transition-transform duration-200 "
           />
         </div>
