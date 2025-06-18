@@ -7,7 +7,7 @@ import { useSearchState } from "../hooks/useSearchState";
 import ArtworkCard from "../components/mainhub/ArtworkCard";
 import SearchBar from "../components/mainhub/SearchBar";
 import ArtworkCardSkeleton from "../components/ui/skeleton/ArtworkCardSkeleton";
-import { useFetchLandingPage } from "../hooks/useFetchLandingPage";
+import { useRandomArtists } from "../hooks/useRandomArtists";
 
 const MainHub = () => {
   const { searchInput, setSearchInput, page, setPage } = useSearchState();
@@ -19,7 +19,7 @@ const MainHub = () => {
   const debouncedSearchTerm = useDebounce(searchInput, 500);
   const { data = [], error, isLoading } = useArtist(debouncedSearchTerm, page);
   const { data: randomData = [], isLoading: isRandomLoading } =
-    useFetchLandingPage(12);
+    useRandomArtists(12);
 
   const savedArtwork = useArtworkStore((s) => s.savedArtwork);
   const addArtwork = useArtworkStore((s) => s.addArtwork);
@@ -39,6 +39,18 @@ const MainHub = () => {
       removeArtwork(id);
     } else {
       addArtwork({ ...artwork, id });
+      setAddedFeedback((prev) => {
+        const newSet = new Set(prev);
+        newSet.add(id);
+        return newSet;
+      });
+      setTimeout(() => {
+        setAddedFeedback((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(id);
+          return newSet;
+        });
+      }, 1000);
     }
   };
 
@@ -96,9 +108,7 @@ const MainHub = () => {
                   <ArtworkCardSkeleton className="flex flex-wrap" key={i} />
                 ))
               : artworksToDisplay.map((artwork, index) => {
-                  const id = hasSearched
-                    ? artwork.id?.replace(/^en-/, "")
-                    : undefined;
+                  const id = artwork.id?.replace(/^en-/, "");
                   const src =
                     artwork.image ||
                     "https://via.placeholder.com/400x600?text=No+Image";
@@ -106,9 +116,8 @@ const MainHub = () => {
                     artwork.artist || artwork.name || "Unknown Artist";
                   const title =
                     artwork.title || artwork.artworkTitle || "Untitled";
-                  const isSaved =
-                    hasSearched && savedArtwork.some((item) => item.id === id);
-                  const wasJustAdded = hasSearched && addedFeedback.has(id);
+                  const isSaved = savedArtwork.some((item) => item.id === id);
+                  const wasJustAdded = addedFeedback.has(id);
 
                   return (
                     <ArtworkCard
@@ -119,11 +128,7 @@ const MainHub = () => {
                       title={title}
                       isSaved={isSaved}
                       wasJustAdded={wasJustAdded}
-                      onToggleArtwork={
-                        hasSearched
-                          ? () => handleToggleArtwork(artwork)
-                          : undefined
-                      }
+                      onToggleArtwork={() => handleToggleArtwork(artwork)}
                     />
                   );
                 })}

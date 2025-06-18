@@ -35,7 +35,6 @@ export const fetchRandomArtists = async (count = 6) => {
     shuffledObjects.forEach((artwork) => {
       const artistName = artwork.principalOrFirstMaker;
 
-      // Filtre les artistes anonymes et doublons
       if (
         !artistName ||
         artistName.toLowerCase() === "anonymous" ||
@@ -52,9 +51,14 @@ export const fetchRandomArtists = async (count = 6) => {
         "/placeholder-artist.jpg";
 
       uniqueArtists.push({
-        name: artistName,
+        id: artwork.id,
+        title: artwork.title || "Œuvre sans titre",
+        artist: artistName,
         image: resizedImage,
-        artworkTitle: artwork.title || "Œuvre sans titre",
+        // Ajouter artworkTitle pour la cohérence
+        artworkTitle: artwork.title,
+        // Ajouter principalOrFirstMaker pour la cohérence
+        principalOrFirstMaker: artistName,
       });
     });
 
