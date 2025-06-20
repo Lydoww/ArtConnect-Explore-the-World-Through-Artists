@@ -2,7 +2,7 @@ import React from "react";
 import Card from "./Card";
 import Badge from "./Badge";
 import { Link } from "react-router-dom";
-
+import { ImageOff, Palette, Brush } from "lucide-react";
 import { RecommendationSkeleton } from "../ui/skeleton/RecommendationSkeleton";
 import { useRecommendations } from "../../hooks/useRecommendations ";
 
@@ -36,7 +36,7 @@ const InsightsTab = ({ favoriteArtists }) => {
     <div className="space-y-8">
       <h2 className="text-xl font-semibold text-white">Your Art Insights</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <div className="p-6">
             <h3 className="text-lg font-medium text-white mb-4">
@@ -97,34 +97,42 @@ const InsightsTab = ({ favoriteArtists }) => {
 
           {recommendations.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {recommendations
-                .slice(0, 3)
-                .map(({ id, title, image, artist }) => (
-                  <Link
-                    to={`/art/${id}`}
-                    key={id}
-                    className="flex gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer no-underline"
-                  >
-                    <div className="w-16 h-16 rounded bg-black/50 flex-shrink-0 overflow-hidden">
+              {recommendations.slice(0, 3).map(({ id, title, image, artist }) => (
+                <Link
+                  to={`/art/${id}`}
+                  key={id}
+                  className="flex gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer no-underline"
+                >
+                  <div className="w-16 h-16 rounded bg-gradient-to-br from-slate-800 to-slate-900 flex-shrink-0 overflow-hidden flex items-center justify-center">
+                    {image ? (
                       <img
                         src={image}
                         alt={`Artwork ${title}`}
                         className="w-full h-full object-cover"
+                        loading="lazy"
                       />
-                    </div>
-                    <div>
-                      <h4 className="text-white text-sm font-medium">
-                        {title}
-                      </h4>
-                      <p className="text-slate-400 text-xs">{artist}</p>
-                      <div className="mt-1">
-                        <Badge className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs">
-                          Recommended
-                        </Badge>
+                    ) : (
+                      <div className="flex flex-col items-center p-2 text-center">
+                        <Palette className="w-5 h-5 text-slate-500" strokeWidth={1.5} />
+                        <span className="text-[10px] text-slate-500 mt-1">No image</span>
                       </div>
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="text-white text-sm font-medium line-clamp-1">
+                      {title || "Untitled Artwork"}
+                    </h4>
+                    <p className="text-slate-400 text-xs line-clamp-1">
+                      {artist || "Unknown Artist"}
+                    </p>
+                    <div className="mt-1">
+                      <Badge className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs">
+                        Recommended
+                      </Badge>
                     </div>
-                  </Link>
-                ))}
+                  </div>
+                </Link>
+              ))}
             </div>
           ) : (
             <p className="text-slate-500 italic text-sm">
