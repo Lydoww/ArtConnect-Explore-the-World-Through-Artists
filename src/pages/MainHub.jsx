@@ -67,6 +67,7 @@ const MainHub = () => {
 
   return (
     <div className="flex justify-center text-center">
+      <div className="w-full max-w-8xl px-4"> 
       <div>
         {/* Heading */}
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -105,7 +106,7 @@ const MainHub = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {loading
               ? Array.from({ length: 8 }).map((_, i) => (
-                  <ArtworkCardSkeleton className="flex flex-wrap" key={i} />
+                  <ArtworkCardSkeleton key={i} />
                 ))
               : artworksToDisplay.map((artwork, index) => {
                   const id = artwork.id?.replace(/^en-/, "");
@@ -157,6 +158,7 @@ const MainHub = () => {
             </button>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
