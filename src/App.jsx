@@ -8,6 +8,8 @@ import Artwork from "./pages/Artwork";
 import Profil from "./pages/Profil";
 import { Toaster } from "sonner";
 import AboutPage from "./pages/About";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +27,8 @@ const App = () => {
             <Route path="/hub" element={<MainHub />} />
             <Route path="/profil" element={<Profil />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
 
             <Route path="/art/:id" element={<Artwork />} />
           </Routes>

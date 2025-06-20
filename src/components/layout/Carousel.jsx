@@ -282,7 +282,7 @@ const Carousel = () => {
                           }
                           className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${
                             !isActive
-                              ? "filter blur-sm brightness-50"
+                              ? "filter  brightness-50"
                               : "filter brightness-90 group-hover:brightness-100"
                           }`}
                           draggable={false} // Prevent image dragging

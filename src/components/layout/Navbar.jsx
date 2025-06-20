@@ -1,11 +1,20 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Palette, Menu, X } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -48,6 +57,20 @@ const Navbar = () => {
             <NavLink to="/" label="Home" />
             <NavLink to="/hub" label="Artists" />
             <NavLink to="/profil" label="Profile" />
+            {!user && (
+              <>
+                <NavLink to="/signup" label="Signup" />
+                <NavLink to="/login" label="Login" />
+              </>
+            )}
+            {user && (
+              <button
+                onClick={handleLogout}
+                className="text-sm font-semibold cursor-pointer text-red-500 hover:text-red-600 transition-colors"
+              >
+                Logout
+              </button>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -71,6 +94,20 @@ const Navbar = () => {
           <NavLink to="/" label="Home" isMobile />
           <NavLink to="/hub" label="Artists" isMobile />
           <NavLink to="/profil" label="Profil" isMobile />
+          {!user && (
+            <>
+              <NavLink to="/signup" label="Signup" isMobile />
+              <NavLink to="/login" label="Login" isMobile />
+            </>
+          )}
+          {user && (
+            <button
+              onClick={handleLogout}
+              className=" font-semibold block text-lg cursor-pointer text-red-500 hover:text-red-600 transition-colors text-left"
+            >
+              Logout
+            </button>
+          )}
         </nav>
       </div>
     </header>
