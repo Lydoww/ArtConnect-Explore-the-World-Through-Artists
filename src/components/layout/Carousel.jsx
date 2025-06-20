@@ -130,7 +130,7 @@ const Carousel = () => {
       <div
         ref={containerRef}
         className="relative overflow-hidden w-full max-w-[70rem] mx-auto"
-        style={{ height: 380, minHeight: 380 }}
+        style={{ height: 500, minHeight: 500 }}
       >
         {/* Subtle gradient borders */}
         <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-600/10 via-transparent to-orange-600/10 rounded-3xl -z-10" />
@@ -154,7 +154,7 @@ const Carousel = () => {
                 className="p-3 transition-all duration-500 ease-out"
                 style={{
                   minWidth: slideWidth,
-                  height: 380,
+                  height: 500,
                   transform: `scale(${
                     isActive ? 1.05 : distance === 1 ? 0.9 : 0.8
                   })`,
