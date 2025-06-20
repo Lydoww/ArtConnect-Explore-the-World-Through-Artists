@@ -78,41 +78,58 @@ const Profile = () => {
       </div>
       {/* Lock screen si non connecté */}
       {!user && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-black/70 flex items-center justify-center z-50 px-4">
-          <div className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-xl shadow-2xl border border-gray-100 w-full max-w-md text-center">
+        <div className="fixed inset-0 backdrop-blur-md bg-slate-900/90 flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-2xl shadow-xl border border-slate-700 w-full max-w-md text-center">
             <div className="flex justify-center mb-5">
-              <div className="p-3 bg-red-50 rounded-full inline-flex">
+              <div className="p-4 bg-fuchsia-500/10 rounded-full inline-flex">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 text-red-500"
+                  className="h-10 w-10 text-fuchsia-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
+                  strokeWidth={1.5}
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
                   />
                 </svg>
               </div>
             </div>
 
-            <h2 className="text-2xl font-bold text-gray-800 mb-3">
-              Access Restricted
+            <h2 className="text-2xl font-bold text-gray-100 mb-3">
+              Authentication Required
             </h2>
-            <p className="text-gray-600 mb-7 mx-auto max-w-xs">
-              You need to be logged in to view your profile.
+            <p className="text-gray-400 mb-6">
+              Please sign in to access your profile
             </p>
 
-            <div className="flex justify-center">
-              <Link to="/">
-                <button className="bg-gray-900 hover:bg-gray-800 text-white font-medium py-2.5 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
-                  Back to Home
-                </button>
+            <div className="flex flex-col sm:flex-row justify-center gap-3">
+              <Link
+                to="/login"
+                className="bg-gradient-to-r from-fuchsia-600 to-fuchsia-800 hover:from-fuchsia-700 hover:to-fuchsia-900 text-white font-medium py-2.5 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-fuchsia-500/20"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/"
+                className="bg-slate-700 hover:bg-slate-600 text-gray-200 font-medium py-2.5 px-6 rounded-lg transition-colors duration-200"
+              >
+                Go Home
               </Link>
             </div>
+
+            <p className="text-sm text-gray-500 mt-6">
+              Don't have an account?{" "}
+              <Link
+                to="/signup"
+                className="text-fuchsia-400 hover:text-fuchsia-300 font-medium"
+              >
+                Sign up
+              </Link>
+            </p>
           </div>
         </div>
       )}
