@@ -7,6 +7,8 @@ import CarouselSkeleton from "../ui/skeleton/CarouselSkeleton";
 const Carousel = () => {
   const { data = [], error, isLoading } = useFetchLandingPage();
 
+  console.log(data);
+
   const containerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(960);
 
@@ -31,7 +33,7 @@ const Carousel = () => {
     () =>
       data.map((artist) => ({
         src: artist.image || "/placeholder-artist.jpg",
-        alt: artist.name || "Artiste",
+        alt: artist.artist || "Artiste",
         title: artist.artworkTitle || "Unknown",
       })),
     [data]
@@ -111,19 +113,28 @@ const Carousel = () => {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-48 text-red-500">
-        Erreur lors du chargement des artistes.
+      <div className="flex justify-center items-center h-48 text-red-400 bg-black/20 backdrop-blur-sm rounded-2xl border border-gray-800 mt-16">
+        <div className="text-center">
+          <div className="text-2xl mb-2">⚠️</div>
+          <p>Erreur lors du chargement des artistes.</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="relative flex flex-col items-center py-8">
+    <div className="relative flex flex-col items-center py-16 mt-16">
+      {/* Background glow effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-900/10 via-transparent to-orange-900/10 blur-3xl -z-10" />
+
       <div
         ref={containerRef}
-        className="overflow-hidden w-full max-w-[60rem] mx-auto"
-        style={{ height: 320, minHeight: 320 }}
+        className="relative overflow-hidden w-full max-w-[70rem] mx-auto"
+        style={{ height: 380, minHeight: 380 }}
       >
+        {/* Subtle gradient borders */}
+        <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-600/10 via-transparent to-orange-600/10 rounded-3xl -z-10" />
+
         <motion.div
           className="flex"
           animate={{ x: getOffset() }}
@@ -135,34 +146,65 @@ const Carousel = () => {
         >
           {slidesToRender.map((slide, index) => {
             const isActive = index === currentIndex;
+            const distance = Math.abs(index - currentIndex);
 
             return (
               <motion.div
                 key={slide.key}
-                className={`p-2 transition-all duration-300 ${
-                  isActive ? "scale-105" : "scale-95 opacity-80"
-                }`}
-                style={{ minWidth: slideWidth, height: 320 }}
+                className="p-3 transition-all duration-500 ease-out"
+                style={{
+                  minWidth: slideWidth,
+                  height: 380,
+                  transform: `scale(${
+                    isActive ? 1.05 : distance === 1 ? 0.9 : 0.8
+                  })`,
+                  opacity: isActive ? 1 : distance === 1 ? 0.7 : 0.4,
+                }}
               >
-                <div className="relative rounded-lg overflow-hidden shadow-lg w-full h-full group bg-gray-800">
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl w-full h-full group bg-black/40 backdrop-blur-sm border border-gray-800/50">
                   {slide.isSkeleton ? (
                     <CarouselSkeleton />
                   ) : (
                     <>
-                      <img
-                        src={slide.src}
-                        alt={slide.alt}
-                        loading={
-                          index >= 1 && index <= visibleSlides
-                            ? "eager"
-                            : "lazy"
-                        }
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
-                      <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                        <h3 className="text-lg font-bold">{slide.alt}</h3>
-                        <p className="text-sm text-gray-200">{slide.title}</p>
+                      {/* Main image */}
+                      <div className="relative w-full h-full overflow-hidden">
+                        <img
+                          src={slide.src}
+                          alt={slide.alt}
+                          loading={
+                            index >= 1 && index <= visibleSlides
+                              ? "eager"
+                              : "lazy"
+                          }
+                          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${
+                            !isActive
+                              ? "filter blur-sm brightness-50"
+                              : "filter brightness-90 group-hover:brightness-100"
+                          }`}
+                        />
+
+                        {/* Gradient overlays */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
+
+                        {/* Hover overlay with gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-600/20 via-transparent to-orange-600/20 opacity-0 group-hover:opacity-100 transition-all duration-500" />
+
+                        {/* Active slide indicator */}
+                        {isActive && (
+                          <div className="absolute top-4 right-4 w-3 h-3 bg-gradient-to-r from-fuchsia-500 to-orange-500 rounded-full shadow-lg animate-pulse" />
+                        )}
+                      </div>
+
+                      {/* Content overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                        <div className="backdrop-blur-sm bg-black/20 rounded-xl p-2  border border-white/10">
+                          <h3 className="text-xl font-bold text-white mb-2 drop-shadow-lg">
+                            {slide.alt}
+                          </h3>
+                          <p className="text-gray-200 text-sm opacity-90 drop-shadow-md">
+                            {slide.title}
+                          </p>
+                        </div>
                       </div>
                     </>
                   )}
@@ -173,39 +215,53 @@ const Carousel = () => {
         </motion.div>
       </div>
 
-      <div className="flex flex-row w-full max-w-[60rem] justify-between items-center mt-3">
+      {/* Controls with enhanced design */}
+      <div className="flex flex-row w-full max-w-[70rem] justify-between items-center mt-8">
         <button
           onClick={prevSlide}
           disabled={isDisabled}
-          className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl  disabled:cursor-not-allowed border"
+          className="group relative bg-black/40 backdrop-blur-sm p-4 rounded-full shadow-xl transition-all duration-300 hover:scale-110 hover:bg-black/60 disabled:cursor-not-allowed border border-gray-700/50 hover:border-fuchsia-500/50"
           aria-label="Slide précédent"
         >
-          <ChevronLeft className="text-xl text-black cursor-pointer" />
+          <ChevronLeft className="w-6 h-6 text-gray-300 group-hover:text-white transition-colors duration-300 group-hover:-translate-x-0.5 transform transition-transform" />
+          <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-600/20 to-orange-600/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </button>
 
-        <div className="flex flex-row gap-2">
-          {originalImages.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              disabled={isDisabled}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === getRealIndex()
-                  ? "bg-gray-600 scale-125"
-                  : "bg-white hover:bg-gray-400"
-              }`}
-              aria-label={`Aller à la slide ${index + 1}`}
-            />
-          ))}
+        {/* Enhanced dots indicator */}
+        <div className="flex flex-row gap-3 px-6 py-3 bg-black/30 backdrop-blur-sm rounded-full border border-gray-800/50">
+          {originalImages.map((_, index) => {
+            const isActive = index === getRealIndex();
+            return (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                disabled={isDisabled}
+                className="group relative transition-all duration-300"
+                aria-label={`Aller à la slide ${index + 1}`}
+              >
+                <div
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    isActive
+                      ? "bg-gradient-to-r from-fuchsia-500 to-orange-500 scale-125 shadow-lg"
+                      : "bg-gray-600 hover:bg-gray-400 hover:scale-110"
+                  }`}
+                />
+                {isActive && (
+                  <div className="absolute inset-0 w-3 h-3 rounded-full bg-gradient-to-r from-fuchsia-500 to-orange-500 animate-ping opacity-50" />
+                )}
+              </button>
+            );
+          })}
         </div>
 
         <button
           onClick={nextSlide}
           disabled={isDisabled}
-          className="bg-white p-3 rounded-full shadow-lg transition-all hover:scale-105 hover:shadow-xl disabled:cursor-not-allowed border"
+          className="group relative bg-black/40 backdrop-blur-sm p-4 rounded-full shadow-xl transition-all duration-300 hover:scale-110 hover:bg-black/60 disabled:cursor-not-allowed border border-gray-700/50 hover:border-fuchsia-500/50"
           aria-label="Slide suivant"
         >
-          <ChevronRight className="text-xl text-black cursor-pointer" />
+          <ChevronRight className="w-6 h-6 text-gray-300 group-hover:text-white  duration-300 group-hover:translate-x-0.5 transform transition-transform" />
+          <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-600/20 to-orange-600/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </button>
       </div>
     </div>
