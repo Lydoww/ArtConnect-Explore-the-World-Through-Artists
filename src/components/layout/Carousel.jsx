@@ -10,7 +10,10 @@ const Carousel = () => {
   console.log(data);
 
   const containerRef = useRef(null);
+  const carouselRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(960);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, scrollLeft: 0 });
 
   useEffect(() => {
     const updateSize = () => {
@@ -64,6 +67,90 @@ const Carousel = () => {
   const timeoutRef = useRef(null);
 
   const isDisabled = isAnimating || isLoading || originalImages.length === 0;
+
+  // Mouse/Touch drag handlers
+  const handleMouseDown = (e) => {
+    if (isDisabled) return;
+    setIsDragging(true);
+    setDragStart({
+      x: e.pageX || e.touches?.[0]?.pageX,
+      scrollLeft: currentIndex * slideWidth,
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging || isDisabled) return;
+    e.preventDefault();
+    
+    const x = e.pageX || e.touches?.[0]?.pageX;
+    const walk = (x - dragStart.x) * 2; // Scroll speed multiplier
+    const newScrollLeft = dragStart.scrollLeft - walk;
+    
+    // Calculate new index based on scroll position
+    const newIndex = Math.round(newScrollLeft / slideWidth);
+    
+    // Only update if the index actually changed
+    if (newIndex !== currentIndex && !isAnimating) {
+      setCurrentIndex(Math.max(0, Math.min(newIndex, extendedImages.length - 1)));
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Wheel scroll handler
+  const handleWheel = (e) => {
+    if (isDisabled) return;
+    e.preventDefault();
+    
+    const delta = e.deltaY || e.deltaX;
+    if (Math.abs(delta) > 10) { // Threshold to prevent tiny scrolls
+      if (delta > 0) {
+        nextSlide();
+      } else {
+        prevSlide();
+      }
+    }
+  };
+
+  // Add event listeners
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+
+    // Mouse events
+    carousel.addEventListener('wheel', handleWheel, { passive: false });
+    
+    // Touch events for mobile
+    carousel.addEventListener('touchstart', handleMouseDown, { passive: true });
+    carousel.addEventListener('touchmove', handleMouseMove, { passive: false });
+    carousel.addEventListener('touchend', handleMouseUp, { passive: true });
+
+    return () => {
+      carousel.removeEventListener('wheel', handleWheel);
+      carousel.removeEventListener('touchstart', handleMouseDown);
+      carousel.removeEventListener('touchmove', handleMouseMove);
+      carousel.removeEventListener('touchend', handleMouseUp);
+    };
+  }, [isDragging, dragStart, currentIndex, isDisabled]);
+
+  // Global mouse events for drag
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'grabbing';
+      document.body.style.userSelect = 'none';
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isDragging]);
 
   const prevSlide = () => {
     if (isDisabled) return;
@@ -127,6 +214,14 @@ const Carousel = () => {
       {/* Background glow effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-900/10 via-transparent to-orange-900/10 blur-3xl -z-10" />
 
+      {/* Scroll hint */}
+      <div className="mb-4 text-center">
+        <p className="text-gray-400 text-sm flex items-center justify-center gap-2">
+          <span>💡</span>
+          Use mouse wheel or drag to scroll through artworks
+        </p>
+      </div>
+
       <div
         ref={containerRef}
         className="relative overflow-hidden w-full max-w-[70rem] mx-auto"
@@ -136,13 +231,21 @@ const Carousel = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-600/10 via-transparent to-orange-600/10 rounded-3xl -z-10" />
 
         <motion.div
-          className="flex"
+          ref={carouselRef}
+          className={`flex ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
           animate={{ x: getOffset() }}
           transition={
             isAnimating
               ? { type: "spring", stiffness: 300, damping: 30 }
               : { duration: 0 }
           }
+          onMouseDown={handleMouseDown}
+          style={{ 
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+            MozUserSelect: 'none',
+            msUserSelect: 'none'
+          }}
         >
           {slidesToRender.map((slide, index) => {
             const isActive = index === currentIndex;
@@ -159,6 +262,7 @@ const Carousel = () => {
                     isActive ? 1.05 : distance === 1 ? 0.9 : 0.8
                   })`,
                   opacity: isActive ? 1 : distance === 1 ? 0.7 : 0.4,
+                  pointerEvents: isDragging ? 'none' : 'auto', // Prevent image drag while scrolling
                 }}
               >
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl w-full h-full group bg-black/40 backdrop-blur-sm border border-gray-800/50">
@@ -181,6 +285,7 @@ const Carousel = () => {
                               ? "filter blur-sm brightness-50"
                               : "filter brightness-90 group-hover:brightness-100"
                           }`}
+                          draggable={false} // Prevent image dragging
                         />
 
                         {/* Gradient overlays */}
@@ -197,7 +302,7 @@ const Carousel = () => {
 
                       {/* Content overlay */}
                       <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                        <div className="backdrop-blur-sm bg-black/20 rounded-xl p-2  border border-white/10">
+                        <div className="backdrop-blur-sm bg-black/20 rounded-xl p-2 border border-white/10">
                           <h3 className="text-xl font-bold text-white mb-2 drop-shadow-lg">
                             {slide.alt}
                           </h3>
@@ -260,7 +365,7 @@ const Carousel = () => {
           className="group relative bg-black/40 backdrop-blur-sm p-4 rounded-full shadow-xl transition-all duration-300 hover:scale-110 hover:bg-black/60 disabled:cursor-not-allowed border border-gray-700/50 hover:border-fuchsia-500/50"
           aria-label="Slide suivant"
         >
-          <ChevronRight className="w-6 h-6 text-gray-300 group-hover:text-white  duration-300 group-hover:translate-x-0.5 transform transition-transform" />
+          <ChevronRight className="w-6 h-6 text-gray-300 group-hover:text-white duration-300 group-hover:translate-x-0.5 transform transition-transform" />
           <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-600/20 to-orange-600/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </button>
       </div>
