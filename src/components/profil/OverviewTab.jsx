@@ -2,11 +2,14 @@ import { Palette, Bookmark, TrendingUp, Clock, Heart } from "lucide-react";
 import Card from "./Card";
 import Badge from "./Badge";
 import { useRecommendations } from "../../hooks/useRecommendations ";
+import { useProfileData } from "../../hooks/useProfileData";
 
-const OverviewTab = ({ recentArtworks, favoriteArtists }) => {
+const OverviewTab = () => {
+  const { recentArtworks, favoriteArtists } = useProfileData();
+
   const { data: recommendations = [], isLoading } = useRecommendations();
 
-  // Extraire et compter les styles depuis les recommandations enrichies
+  // Art styles depuis recommandations
   const styleCounts = recommendations.reduce((acc, a) => {
     a.styles?.forEach((style) => {
       acc[style] = (acc[style] || 0) + 1;
@@ -14,15 +17,17 @@ const OverviewTab = ({ recentArtworks, favoriteArtists }) => {
     return acc;
   }, {});
 
-  // Trier les styles par occurrence
   const sortedStyles = Object.entries(styleCounts)
     .sort((a, b) => b[1] - a[1])
     .map(([style]) => style);
+
+  console.log("[OverviewTab] recentArtworks:", recentArtworks);
 
   return (
     <div className="space-y-8">
       {/* Stats cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Favorite Artists */}
         <Card>
           <div className="p-6 flex flex-col h-full">
             <div className="flex items-center justify-between mb-4">
@@ -48,6 +53,7 @@ const OverviewTab = ({ recentArtworks, favoriteArtists }) => {
           </div>
         </Card>
 
+        {/* Styles */}
         <Card>
           <div className="p-6 flex flex-col h-full">
             <div className="flex items-center justify-between mb-4">
@@ -77,6 +83,7 @@ const OverviewTab = ({ recentArtworks, favoriteArtists }) => {
           </div>
         </Card>
 
+        {/* Recommendations */}
         <Card>
           <div className="p-6 flex flex-col h-full">
             <div className="flex items-center justify-between mb-4">
@@ -102,7 +109,7 @@ const OverviewTab = ({ recentArtworks, favoriteArtists }) => {
         </Card>
       </div>
 
-      {/* Recent activity */}
+      {/* Recently Saved */}
       <div>
         <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
           <Clock size={18} className="text-blue-400" />
@@ -111,24 +118,24 @@ const OverviewTab = ({ recentArtworks, favoriteArtists }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {recentArtworks.length > 0 ? (
-            recentArtworks.map((artwork, index) => (
+            recentArtworks.map((artwork) => (
               <div
-                key={index}
+                key={artwork.id}
                 className="group relative overflow-hidden rounded-lg aspect-[3/4]"
               >
                 <img
                   src={
                     artwork.image ||
                     `/placeholder.svg?height=400&width=300&text=${encodeURIComponent(
-                      artwork.title || "Artwork"
+                      artwork.artworkTitle || "Artwork"
                     )}`
                   }
-                  alt={artwork.title || "Artwork"}
+                  alt={artwork.artworkTitle || "Artwork"}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                   <h3 className="text-white font-medium">
-                    {artwork.title || "Untitled"}
+                    {artwork.artworkTitle || "Untitled"}
                   </h3>
                   <p className="text-slate-300 text-sm">
                     {artwork.artist || "Unknown Artist"}

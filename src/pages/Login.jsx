@@ -22,7 +22,6 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      setError(error.message || "Invalid email or password");
     } finally {
       setIsLoading(false);
     }

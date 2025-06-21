@@ -1,65 +1,130 @@
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { db } from "../lib/firebase";
+import { createLikes } from "../services/likesService";
+import toast from "react-hot-toast";
 
 export const useArtworkStore = create(
-  persist(
-    (set, get) => ({
-      savedArtwork: [],
+  (set, get) => ({
+    savedArtwork: [],
+    isLoadingLikes: false,
 
-      addArtwork: (artwork) => {
-        const stored = get().savedArtwork;
-        const exists = stored.some((item) => item.id === artwork.id);
-        if (exists) return;
+    async fetchUserLikes(userId) {
+      if (!userId) return;
+      console.log("[fetchUserLikes] Start fetching likes for userId:", userId);
+      set({ isLoadingLikes: true });
+      try {
+        const q = query(collection(db, "likes"), where("user", "==", userId));
+        const querySnapshot = await getDocs(q);
+        const likes = [];
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const likedAtMillis =
+            data.likedAt && data.likedAt.toMillis
+              ? data.likedAt.toMillis()
+              : data.likedAt;
+          if (data.id && data.artworkTitle) {
+            likes.push({
+              ...data,
+              likedAt: likedAtMillis,
+              savedAt: data.savedAt ?? likedAtMillis ?? Date.now(),
+            });
+          }
+        });
+        console.log("[fetchUserLikes] Likes fetched:", likes.length);
+        set({ savedArtwork: likes, isLoadingLikes: false });
+      } catch (error) {
+        console.error("fetchUserLikes error:", error);
+        set({ savedArtwork: [], isLoadingLikes: false });
+      }
+    },
 
-        const inferredStyle =
-          artwork.styles?.join(", ") ||
-          artwork.techniques?.join(", ") ||
-          artwork.period ||
-          artwork.culture ||
-          "Unknown";
+    addArtwork: async (user, artwork) => {
+      if (!user) {
+        toast.error("User not logged in");
+        console.error("addArtwork: Missing user");
+        return;
+      }
+      if (!artwork?.id) {
+        toast.error("Artwork data invalid");
+        console.error("addArtwork: Missing artwork id", artwork);
+        return;
+      }
+
+      const stored = get().savedArtwork;
+      const exists = stored.some((item) => item.id === artwork.id);
+
+      if (exists) {
+        console.log("addArtwork: Artwork already liked", artwork.id);
+        return;
+      }
+
+      try {
+        console.log("addArtwork: Adding artwork", artwork);
+
+        const enrichedArtwork = await createLikes(user, artwork);
+        console.log(
+          "addArtwork: Enriched artwork from createLikes",
+          enrichedArtwork
+        );
+
+        if (!enrichedArtwork || !enrichedArtwork.id) {
+          throw new Error("addArtwork: Invalid enriched artwork returned");
+        }
 
         const artworkWithExtras = {
-          ...artwork,
-          style: inferredStyle,
+          ...enrichedArtwork,
           savedAt: Date.now(),
         };
 
         const updated = [artworkWithExtras, ...stored];
         set({ savedArtwork: updated });
-      },
+        toast.success("Artwork liked!");
+      } catch (error) {
+        console.error("addArtwork: Error while adding to firestore:", error);
+        toast.error("Failed to like the artwork");
+      }
+    },
 
-      removeArtwork: (idToRemove) => {
+    removeArtwork: async (user, artworkId) => {
+      if (!user) {
+        toast.error("User not logged in");
+        console.error("removeArtwork: Missing user");
+        return;
+      }
+      if (!artworkId) {
+        toast.error("Artwork ID invalid");
+        console.error("removeArtwork: Missing artworkId");
+        return;
+      }
+
+      try {
+        console.log("removeArtwork: Removing artwork id:", artworkId);
         const updated = get().savedArtwork.filter(
-          (item) => item.id !== idToRemove
+          (item) => item.id !== artworkId
         );
+        await deleteDoc(doc(db, "likes", `${user.uid}_${artworkId}`));
         set({ savedArtwork: updated });
-      },
+        toast.success("Artwork removed");
+      } catch (error) {
+        console.error(
+          "removeArtwork: Error while deleting artwork in firestore:",
+          error
+        );
+        toast.error("Failed to delete the artwork from your collection");
+      }
+    },
 
-      getStyleCounts: () => {
-        const counts = {};
-        get().savedArtwork.forEach((artwork) => {
-          const styles = artwork.style?.split(", ") || [];
-          styles.forEach((style) => {
-            const cleaned = style.trim();
-            if (cleaned && cleaned !== "Unknown") {
-              counts[cleaned] = (counts[cleaned] || 0) + 1;
-            }
-          });
-        });
-        return counts;
-      },
-
-      
-
-      getRecentArtworks: () => {
-        return [...get().savedArtwork]
-          .filter((a) => a.savedAt)
-          .sort((a, b) => b.savedAt - a.savedAt)
-          .slice(0, 3);
-      },
-    }),
-    {
-      name: "artwork-storage",
-    }
-  )
+    clearArtwork: () => set({ savedArtwork: [] }),
+  }),
+  {
+    name: "artwork-storage",
+  }
 );

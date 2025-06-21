@@ -9,6 +9,7 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -18,11 +19,10 @@ const Signup = () => {
     try {
       const credentialUser = await signup({ email, password });
       if (credentialUser) {
-        navigate("/login"); // Note: corrigé la casse pour cohérence
+        navigate("/profil");
       }
     } catch (error) {
       console.error("Signup error:", error);
-      setError(error.message || "An error occurred during signup");
     } finally {
       setIsLoading(false);
     }

@@ -6,6 +6,11 @@ import {
   signOut,
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
+import toast from "react-hot-toast";
+import { getFirebaseErrorMessage } from "../utils/firebaseErrors";
+import { createUserProfile } from "../services/userService";
+import { useArtwork } from "../hooks/useArtwork";
+import { useArtworkStore } from "../stores/useArtworkStore";
 
 export const AuthContext = createContext(null);
 
@@ -16,6 +21,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user || null);
+
       setLoading(false);
     });
     return () => unsubscribe();
@@ -23,12 +29,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = async ({ email, password }) => {
     try {
-      if (!email) {
-        console.log("Il n'y a pas d'email");
-        return;
-      }
-      if (!password) {
-        console.log("Il n'y a pas de password");
+      if (!email || !password) {
+        toast.error("Please fill in all fields.");
         return;
       }
       const userCredential = await signInWithEmailAndPassword(
@@ -37,44 +39,68 @@ export const AuthProvider = ({ children }) => {
         password
       );
 
-      console.log(userCredential);
+      toast.success("Successfully logged in !");
       return userCredential;
     } catch (error) {
-      console.log("Error connexion:", error);
-      alert("Impossible de se connecter");
+      console.error("Login error:", error);
+      toast.error(getFirebaseErrorMessage(error.code));
     }
   };
 
   const signup = async ({ email, password }) => {
     try {
-      if (!email) {
-        console.log("Il n'y a pas d'email");
+      if (!email || !password) {
+        toast.error("Please fill in all fields.");
         return;
       }
-      if (!password) {
-        console.log("Il n'y a pas de password");
-        return;
-      }
+
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
-      console.log(userCredential);
+      const user = userCredential.user;
+
+      await createUserProfile({
+        uid: user.uid,
+        email: user.email ?? "unknown",
+      });
+      toast.success("Account created successfully!");
       return userCredential;
     } catch (error) {
-      console.log("Error d'inscription:", error.message);
-      alert("Impossible de se connecter");
+      console.error("Signup error:", error);
+      toast.error(getFirebaseErrorMessage(error.code));
     }
   };
 
   const logout = async () => {
-    await signOut(auth);
+    try {
+      await signOut(auth);
+      setUser(null);
+      useArtworkStore.getState().clearArtwork();
+      toast.success("Logout success");
+    } catch (error) {
+      console.error("Logout failed", error);
+      toast.error("Failed to logout");
+    }
   };
 
   return (
     <AuthContext.Provider value={{ user, login, signup, logout }}>
-      {loading ? <div>Loading...</div> : children}
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+          <div
+            className=" w-12 h-12
+    rounded-full
+    border-4 border-fuchsia-500
+    border-t-transparent
+    animate-spin
+    "
+          ></div>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };

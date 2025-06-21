@@ -3,11 +3,27 @@ import { useArtworkStore } from "../stores/useArtworkStore";
 
 export const useProfileData = () => {
   const savedArtwork = useArtworkStore((s) => s.savedArtwork);
-  const getStyleCounts = useArtworkStore.getState().getStyleCounts;
-  const getRecentArtworks = useArtworkStore.getState().getRecentArtworks;
+  console.log("[useProfileData] savedArtwork count:", savedArtwork.length);
+  const styleCounts = useMemo(() => {
+    const counts = {};
+    savedArtwork.forEach((artwork) => {
+      const styles = artwork.style?.split(", ") || [];
+      styles.forEach((style) => {
+        const cleaned = style.trim();
+        if (cleaned && cleaned !== "Unknown") {
+          counts[cleaned] = (counts[cleaned] || 0) + 1;
+        }
+      });
+    });
+    return counts;
+  }, [savedArtwork]);
 
-  const styleCounts = useMemo(() => getStyleCounts(), [savedArtwork]);
-  const recentArtworks = useMemo(() => getRecentArtworks(), [savedArtwork]);
+  const recentArtworks = useMemo(() => {
+    return [...savedArtwork]
+      .filter((a) => a.savedAt)
+      .sort((a, b) => b.savedAt - a.savedAt)
+      .slice(0, 3);
+  }, [savedArtwork]);
 
   const artistCounts = useMemo(() => {
     return savedArtwork.reduce((acc, { artist }) => {

@@ -59,14 +59,14 @@ const Navbar = () => {
             <NavLink to="/profil" label="Profile" />
             {!user && (
               <>
-                <NavLink to="/signup" label="Signup" />
                 <NavLink to="/login" label="Login" />
+                <NavLink to="/signup" label="Signup" />
               </>
             )}
             {user && (
               <button
                 onClick={handleLogout}
-                className="text-sm font-semibold cursor-pointer text-red-500 hover:text-red-600 transition-colors"
+                className="text-sm font-bold cursor-pointer text-red-500 hover:text-red-600 transition-colors"
               >
                 Logout
               </button>
@@ -96,8 +96,8 @@ const Navbar = () => {
           <NavLink to="/profil" label="Profil" isMobile />
           {!user && (
             <>
-              <NavLink to="/signup" label="Signup" isMobile />
               <NavLink to="/login" label="Login" isMobile />
+              <NavLink to="/signup" label="Signup" isMobile />
             </>
           )}
           {user && (
