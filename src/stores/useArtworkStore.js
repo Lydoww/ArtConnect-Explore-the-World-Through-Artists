@@ -18,7 +18,7 @@ export const useArtworkStore = create(
 
     async fetchUserLikes(userId) {
       if (!userId) return;
-      console.log("[fetchUserLikes] Start fetching likes for userId:", userId);
+
       set({ isLoadingLikes: true });
       try {
         const q = query(collection(db, "likes"), where("user", "==", userId));
@@ -38,7 +38,7 @@ export const useArtworkStore = create(
             });
           }
         });
-        console.log("[fetchUserLikes] Likes fetched:", likes.length);
+
         set({ savedArtwork: likes, isLoadingLikes: false });
       } catch (error) {
         console.error("fetchUserLikes error:", error);
@@ -61,19 +61,8 @@ export const useArtworkStore = create(
       const stored = get().savedArtwork;
       const exists = stored.some((item) => item.id === artwork.id);
 
-      if (exists) {
-        console.log("addArtwork: Artwork already liked", artwork.id);
-        return;
-      }
-
       try {
-        console.log("addArtwork: Adding artwork", artwork);
-
         const enrichedArtwork = await createLikes(user, artwork);
-        console.log(
-          "addArtwork: Enriched artwork from createLikes",
-          enrichedArtwork
-        );
 
         if (!enrichedArtwork || !enrichedArtwork.id) {
           throw new Error("addArtwork: Invalid enriched artwork returned");
@@ -86,7 +75,7 @@ export const useArtworkStore = create(
 
         const updated = [artworkWithExtras, ...stored];
         set({ savedArtwork: updated });
-        toast.success("Artwork liked!");
+        toast.success("Artwork liked");
       } catch (error) {
         console.error("addArtwork: Error while adding to firestore:", error);
         toast.error("Failed to like the artwork");
@@ -106,7 +95,6 @@ export const useArtworkStore = create(
       }
 
       try {
-        console.log("removeArtwork: Removing artwork id:", artworkId);
         const updated = get().savedArtwork.filter(
           (item) => item.id !== artworkId
         );

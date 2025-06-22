@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import ArtworkOverlay from "./ArtworkOverlay";
 import HeartIcon from "./HeartIcon";
-import AddedFeedback from "./AddedFeedback";
 
 const ArtworkCard = ({
   src,
@@ -24,7 +23,7 @@ const ArtworkCard = ({
       }}
     />
 
-    {wasJustAdded && <AddedFeedback />}
+    {wasJustAdded}
 
     <img
       src={src}

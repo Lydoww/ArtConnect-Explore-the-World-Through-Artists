@@ -12,8 +12,6 @@ export const createLikes = async (user, artwork) => {
     throw new Error("createLikes: Artwork id is missing");
   }
 
-  console.log("createLikes: Creating like for artwork id:", artwork.id);
-
   const likeRef = doc(db, "likes", `${user.uid}_${artwork.id}`);
 
   const inferredStyle =
@@ -35,6 +33,6 @@ export const createLikes = async (user, artwork) => {
   };
 
   await setDoc(likeRef, likeData, { merge: true });
-  console.log("createLikes: Like created", likeData);
+
   return likeData;
 };

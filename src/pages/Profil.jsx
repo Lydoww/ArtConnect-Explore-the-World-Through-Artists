@@ -7,13 +7,12 @@ import CollectionTab from "../components/profil/CollectionTab";
 import InsightsTab from "../components/profil/InsightTab";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import { useAvatarStore } from "../stores/useAvatarStore";
+import ProfileSkeleton from "../components/ui/skeleton/ProfileSkeleton";
 
 const Profile = () => {
   const { user } = useAuth();
-  const [selectedAvatar, setSelectedAvatar] = useState(() => {
-    const savedAvatar = localStorage.getItem("selectedAvatar");
-    return savedAvatar ? JSON.parse(savedAvatar) : null;
-  });
+  const { avatar, changeAvatar, isLoading } = useAvatarStore();
   const [activeTab, setActiveTab] = useState("overview");
   const {
     savedArtwork,
@@ -21,15 +20,8 @@ const Profile = () => {
     styleCounts,
     favoriteArtists,
     artStyles,
+    isLoadingLikes,
   } = useProfileData();
-
-  useEffect(() => {
-    if (selectedAvatar) {
-      localStorage.setItem("selectedAvatar", JSON.stringify(selectedAvatar));
-    } else {
-      localStorage.removeItem("selectedAvatar");
-    }
-  }, [selectedAvatar]);
 
   useEffect(() => {
     if (!user) {
@@ -43,12 +35,16 @@ const Profile = () => {
     };
   }, [user]);
 
+  if (isLoading || isLoadingLikes) {
+    return <ProfileSkeleton />;
+  }
+
   return (
     <div className="min-h-screen">
       <HeroSection
         savedArtwork={savedArtwork}
-        selectedAvatar={selectedAvatar}
-        onAvatarSelect={setSelectedAvatar}
+        selectedAvatar={isLoading ? null : avatar}
+        onAvatarSelect={changeAvatar}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-white">

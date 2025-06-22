@@ -7,7 +7,7 @@ import CarouselSkeleton from "../ui/skeleton/CarouselSkeleton";
 const Carousel = () => {
   const { data = [], error, isLoading } = useFetchLandingPage();
 
-  console.log(data);
+
 
   const containerRef = useRef(null);
   const carouselRef = useRef(null);

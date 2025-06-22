@@ -3,7 +3,7 @@ import { useArtworkStore } from "../stores/useArtworkStore";
 
 export const useProfileData = () => {
   const savedArtwork = useArtworkStore((s) => s.savedArtwork);
-  console.log("[useProfileData] savedArtwork count:", savedArtwork.length);
+
   const styleCounts = useMemo(() => {
     const counts = {};
     savedArtwork.forEach((artwork) => {

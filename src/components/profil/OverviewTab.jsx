@@ -24,7 +24,7 @@ const OverviewTab = () => {
     .sort((a, b) => b[1] - a[1])
     .map(([style]) => style);
 
-  console.log("[OverviewTab] recentArtworks:", recentArtworks);
+ 
   if (isLoadingLikes) return <ProfileSkeleton />;
   return (
     <div className="space-y-8">
