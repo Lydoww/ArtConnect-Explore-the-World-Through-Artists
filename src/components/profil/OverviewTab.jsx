@@ -3,11 +3,14 @@ import Card from "./Card";
 import Badge from "./Badge";
 import { useRecommendations } from "../../hooks/useRecommendations ";
 import { useProfileData } from "../../hooks/useProfileData";
+import { useArtworkStore } from "../../stores/useArtworkStore";
+import ProfileSkeleton from "../ui/skeleton/ProfileSkeleton";
 
 const OverviewTab = () => {
   const { recentArtworks, favoriteArtists } = useProfileData();
 
   const { data: recommendations = [], isLoading } = useRecommendations();
+  const isLoadingLikes = useArtworkStore((s) => s.isLoadingLikes);
 
   // Art styles depuis recommandations
   const styleCounts = recommendations.reduce((acc, a) => {
@@ -22,7 +25,7 @@ const OverviewTab = () => {
     .map(([style]) => style);
 
   console.log("[OverviewTab] recentArtworks:", recentArtworks);
-
+  if (isLoadingLikes) return <ProfileSkeleton />;
   return (
     <div className="space-y-8">
       {/* Stats cards */}
