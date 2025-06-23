@@ -1,56 +1,65 @@
 🎨 ArtConnect – Explore the World Through Artists
-ArtConnect is a modern art discovery web app built with React, powered by the Rijksmuseum API. It offers a clean, intuitive interface to explore famous artists and their artworks, save favorites, and download images — designed as a polished freelance portfolio project.
+ArtConnect is a modern art discovery web application built with React and powered by the Rijksmuseum API. It offers an elegant and intuitive interface to explore renowned artists and their artworks, save favorites, and download images. This project serves as a polished portfolio piece targeting recruiters and freelance clients.
 
 🌐 Live Demo
-➡️ ArtConnect Live Demo
+You can explore the live application here:
+https://art-connect-explore-artists.vercel.app/
 
 📂 Repository
-➡️ GitHub Repo
+The full source code is available on GitHub:
+https://github.com/Lydoww/ArtConnect-Explore-the-World-Through-Artists
 
 🚀 Tech Stack
-⚛️ React 19 – Modern UI with functional components & hooks
+ArtConnect is built using the following technologies and libraries:
 
-💨 TailwindCSS 4 – Utility-first CSS for rapid responsive styling
+React 19: Modern frontend library with functional components and hooks
 
-🔄 Zustand – Lightweight global state management with persistence
+TailwindCSS 4: Utility-first CSS framework for fast and responsive styling
 
-🔥 Firebase & Firestore – Backend services for authentication and data persistence
+Zustand: Lightweight and simple global state management with persistence support
 
-🧪 Vitest + React Testing Library – Testing framework and utilities for unit/UI tests
+Firebase & Firestore: Backend services for user authentication and data storage
 
-🎞 Framer Motion – Animations and transitions for smooth UI
+Vitest & React Testing Library: Testing frameworks for unit and integration tests
 
-🖼 Rijksmuseum API – Source for artworks and artist data
+Framer Motion: For smooth animations and interactive transitions
 
-⚡ Vite – Fast dev server and build tool
+Rijksmuseum API: Provides rich data of artworks and artists
 
-🪟 Lucide React – Clean, customizable icon components
+Vite: Fast development server and build tool
+
+Lucide React: Icon components for a clean and customizable UI
 
 📚 Key Features
-🎨 Browse random artworks or search by artist and style
+Browse random artworks or search by artist, style, and keywords
 
-🕵️‍♂️ Real-time search suggestions with debounce
+Real-time, debounced search suggestions for smooth UX
 
-⭐ Save favorite artworks locally and sync with Firestore
+Save favorite artworks locally with synchronization to Firestore
 
-⬇️ Download images with accessible buttons and visual feedback
+Download artwork images with accessible buttons and visual feedback
 
-📱 Fully responsive design for mobile and desktop
+Fully responsive design optimized for both mobile and desktop devices
 
-✨ Smooth animations enhancing user experience
+Smooth animations enhancing user experience and interaction
 
-🔗 Clean, semantic markup with accessibility in mind
+Semantic markup with accessibility considerations
 
-🛠 Development Notes
-Custom React hooks handle API calls and state
+🛠 Development Highlights
+Custom React hooks encapsulate API interactions and state logic
 
-Zustand stores manage saved artworks and UI state with localStorage persistence
+Zustand store manages saved artworks and UI state with localStorage persistence
 
-Firebase Auth manages user sessions securely
+Firebase Authentication handles secure user sessions
 
-API errors and loading states are gracefully handled
+Graceful handling of loading states and API errors for robustness
+
+🛑 Current Status and Future Plans
+No new features are planned at this time
+
+The project is intended as a professional showcase for recruiters and freelance clients
 
 👨‍💻 Author
 Alexis Helm
 Full-Stack Developer – React | TypeScript | Node.js
-LinkedIn
+LinkedIn Profile
