@@ -1,12 +1,56 @@
-# React + Vite
+🎨 ArtConnect – Explore the World Through Artists
+ArtConnect is a modern art discovery web app built with React, powered by the Rijksmuseum API. It offers a clean, intuitive interface to explore famous artists and their artworks, save favorites, and download images — designed as a polished freelance portfolio project.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🌐 Live Demo
+➡️ ArtConnect Live Demo
 
-Currently, two official plugins are available:
+📂 Repository
+➡️ GitHub Repo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🚀 Tech Stack
+⚛️ React 19 – Modern UI with functional components & hooks
 
-## Expanding the ESLint configuration
+💨 TailwindCSS 4 – Utility-first CSS for rapid responsive styling
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+🔄 Zustand – Lightweight global state management with persistence
+
+🔥 Firebase & Firestore – Backend services for authentication and data persistence
+
+🧪 Vitest + React Testing Library – Testing framework and utilities for unit/UI tests
+
+🎞 Framer Motion – Animations and transitions for smooth UI
+
+🖼 Rijksmuseum API – Source for artworks and artist data
+
+⚡ Vite – Fast dev server and build tool
+
+🪟 Lucide React – Clean, customizable icon components
+
+📚 Key Features
+🎨 Browse random artworks or search by artist and style
+
+🕵️‍♂️ Real-time search suggestions with debounce
+
+⭐ Save favorite artworks locally and sync with Firestore
+
+⬇️ Download images with accessible buttons and visual feedback
+
+📱 Fully responsive design for mobile and desktop
+
+✨ Smooth animations enhancing user experience
+
+🔗 Clean, semantic markup with accessibility in mind
+
+🛠 Development Notes
+Custom React hooks handle API calls and state
+
+Zustand stores manage saved artworks and UI state with localStorage persistence
+
+Firebase Auth manages user sessions securely
+
+API errors and loading states are gracefully handled
+
+👨‍💻 Author
+Alexis Helm
+Full-Stack Developer – React | TypeScript | Node.js
+LinkedIn
