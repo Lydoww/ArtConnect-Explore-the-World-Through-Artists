@@ -39,7 +39,11 @@ const DownloadButton = ({ imageUrl, fileName }) => {
       aria-label={downloaded ? "Downloaded" : "Download"}
       className="p-0 m-0 border-none bg-transparent cursor-pointer text-white"
     >
-      {downloaded ? <Check size={18} color="green" /> : <Download size={18} />}
+      {downloaded ? (
+        <Check data-testid="check-icon" size={18} color="green" />
+      ) : (
+        <Download data-testid="download-icon" size={18} />
+      )}
     </button>
   );
 };
