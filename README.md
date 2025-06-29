@@ -1,6 +1,6 @@
 # 🎨 ArtConnect – Explore the World Through Artists
 
-ArtConnect is a modern art discovery web application built with React and powered by the Rijksmuseum API. It offers an elegant and intuitive interface to explore renowned artists and their artworks, save favorites, and download images. This project serves as a polished portfolio piece targeting recruiters and freelance clients.
+ArtConnect is a modern art discovery web application built with React and powered by the Rijksmuseum API. It offers an elegant and intuitive interface to explore renowned artists and their artworks, save favorites, and download images. 
 
 ## 🌐 Live Demo
 
