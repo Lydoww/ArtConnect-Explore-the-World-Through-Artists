@@ -7,11 +7,6 @@ ArtConnect is a modern art discovery web application built with React and powere
 You can explore the live application here:  
 [https://art-connect-explore-artists.vercel.app/](https://art-connect-explore-artists.vercel.app/)
 
-## 📂 Repository
-
-The full source code is available on GitHub:  
-[https://github.com/Lydoww/ArtConnect-Explore-the-World-Through-Artists](https://github.com/Lydoww/ArtConnect-Explore-the-World-Through-Artists)
-
 ## 🚀 Tech Stack
 
 ArtConnect is built using the following technologies and libraries:
